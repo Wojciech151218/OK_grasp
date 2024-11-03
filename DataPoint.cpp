@@ -34,41 +34,27 @@ unsigned int DataPoint::getReadyTime() const {
 unsigned int DataPoint::getDemand() const {
     return demand;
 }
-size_t DataPoint::load_time(std::vector<DataPoint> previous_vertices) const {
+
+float DataPoint::load_time(float previous_load_time, const DataPoint & previous_vertex) const {
     /// b_i = max{ b_i-1 + d_i-1 + c_i-1,i , e_i  }
-    /// b_1 czas zakończenia rozładunku w poprzednim wierzchołku.
+    /// b_1-1 czas zakończenia rozładunku w poprzednim wierzchołku.
     ///d_i-1 czas rozładunku w poprzednim wierzchołku.
     ///c_i-1,i czas przejazdu między wierzchołkami i-1 i i
     ///e_i  najwcześniejszy dopuszczalny czas rozładunku w wierzchołku i
 
+    let next_available_time = static_cast<float>(ready_time);
 
-    let next_available_time = ready_time;
 
-    if(previous_vertices.empty()) return next_available_time;
+    let finish_time =static_cast<float>( previous_load_time);
+    let previous_reload_time = static_cast<float>( previous_vertex.getService());
+    let distance =  get_distance(previous_vertex) ;
 
-    let previous_vertex = previous_vertices.back();
-    previous_vertices.pop_back();
-    let finish_time =  previous_vertex.load_time(previous_vertices);
-    let previous_reload_time = previous_vertex.getService();
-    let distance =  static_cast<size_t>(get_distance(previous_vertex) );
 
-    return std::max(finish_time + previous_reload_time + distance , next_available_time);
+    return std::max(finish_time + previous_reload_time + distance + service , next_available_time);
 }
-size_t DataPoint::load_time(size_t previous_load_time, const DataPoint & previous_vertex) const {
-    /// b_i = max{ b_i-1 + d_i-1 + c_i-1,i , e_i  }
-    /// b_1 czas zakończenia rozładunku w poprzednim wierzchołku.
-    ///d_i-1 czas rozładunku w poprzednim wierzchołku.
-    ///c_i-1,i czas przejazdu między wierzchołkami i-1 i i
-    ///e_i  najwcześniejszy dopuszczalny czas rozładunku w wierzchołku i
 
-    let next_available_time = ready_time;
-
-
-    let finish_time = previous_load_time;
-    let previous_reload_time = previous_vertex.getService();
-    let distance =  static_cast<size_t>(get_distance(previous_vertex) );
-
-    return std::max(finish_time + previous_reload_time + distance , next_available_time);
+unsigned int DataPoint::getCustomerNumber() const {
+    return customer_number;
 }
 
 

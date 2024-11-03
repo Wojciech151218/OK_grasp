@@ -15,23 +15,6 @@ rng_type rng(std::random_device{}()); // Initialize the random number generator
 
 Solution::Solution(const Graph  & graph): graph(graph), unacceptable(false){}
 
-float Solution::get_cost_function() const {
-    auto result = 0.0f;
-
-    for (const auto& vehicle : routes) {
-        if (vehicle.empty()) continue;
-
-        result += graph.get_distance_from_depot(vehicle.front());
-
-        for (size_t i = 1; i < vehicle.size(); ++i) {
-            result += graph.get_edge(vehicle[i - 1], vehicle[i]);
-        }
-
-        result += graph.get_distance_from_depot(vehicle.back());
-    }
-
-    return result;
-}
 
 
 
@@ -203,5 +186,9 @@ bool Solution::is_unacceptable() const {
 
 void Solution::setUnacceptable() {
     Solution::unacceptable = true;
+}
+
+std::vector<std::vector<size_t>> Solution::getRoutes() const {
+    return routes;
 }
 

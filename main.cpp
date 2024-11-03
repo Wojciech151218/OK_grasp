@@ -10,6 +10,5 @@ int main() {
     auto depot = DataLoader::load_depot(file_path);
     auto problem = Problem(data,fleet_properties,depot);
     auto solution = problem.solve_grasp(0, 0);
-    auto cost = solution.get_cost_function();
-    ResultSaver::save_solution(solution,R"(C:\Users\Wojciech\CLionProjects\OK_grasp\result)");
+    ResultSaver::save_solution(solution,problem,R"(C:\Users\Wojciech\CLionProjects\OK_grasp\result)");
 }

@@ -15,6 +15,7 @@ private:
     bool unacceptable;
 public:
     std::vector<std::vector<size_t>> &getRoutes() ;
+    std::vector<std::vector<size_t>> getRoutes()const ;
 
     bool is_unacceptable() const;
 
@@ -22,7 +23,6 @@ public:
 
 public:
     float get_routes_number() const ;
-    float get_cost_function() const;
     Solution swap();
     Solution two_opt();
     Solution three_opt();

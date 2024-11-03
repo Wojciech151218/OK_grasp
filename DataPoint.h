@@ -11,13 +11,15 @@ public:
               unsigned int ready, unsigned int due, unsigned int service);
 
     float get_distance(const DataPoint &dataPoint) const;
+
+    unsigned int getCustomerNumber() const;
+
     unsigned int getService() const;
     unsigned int getDueDate() const;
     unsigned int getReadyTime() const;
     unsigned int getDemand() const;
 
-    size_t load_time(std::vector<DataPoint> previous_vertices) const;
-    size_t load_time(size_t previous_load_time, const DataPoint &previous_vertex) const;
+    float load_time(float previous_load_time, const DataPoint &previous_vertex) const;
 
     // Friend swap function that swaps all members
     friend void swap(DataPoint& a, DataPoint& b) noexcept {

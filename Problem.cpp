@@ -34,7 +34,7 @@ Problem::Problem(std::vector<DataPoint> _data, const FleetProperties &fleetPrope
 }
 bool Problem::can_add_to_route(const std::vector<size_t> &route, const DataPoint &customer)const {
     size_t total_demand = 0;
-    size_t load_time = 0;
+    auto load_time = 0.0f;
 
 
     for (size_t i = 0; i < route.size(); ++i) {
@@ -48,13 +48,14 @@ bool Problem::can_add_to_route(const std::vector<size_t> &route, const DataPoint
             let &previous = data[route[i-1]] ;
 
             load_time = next.load_time(load_time, previous);
-            if (load_time > next.getDueDate()) return false;
-            if(depot.load_time(load_time,previous)> depot.getDueDate()){
+            let service = static_cast<float>(next.getService());
+            if (load_time - service > static_cast<float>(next.getDueDate())) return false;
+            if(depot.load_time(load_time,previous)> static_cast<float>(depot.getDueDate())){
                 return false; // cant go back nie mozemy tu isc
             }// Time window constraint violated
 
         }else {
-            load_time = next.getReadyTime();
+            load_time = static_cast<float>(next.getReadyTime());
         }
     }
 
@@ -62,7 +63,7 @@ bool Problem::can_add_to_route(const std::vector<size_t> &route, const DataPoint
     total_demand += customer.getDemand();
     load_time = customer.load_time(load_time,data[route[route.size()-1]]);
 
-    return total_demand <= fleetProperties.capacity && load_time <= customer.getDueDate();
+    return total_demand <= fleetProperties.capacity && load_time <= static_cast<float>(customer.getDueDate());
 }
 bool Problem::check_capacity(const std::vector<size_t> &route, const DataPoint &customer) const {
     size_t total_demand = 0;
@@ -72,7 +73,7 @@ bool Problem::check_capacity(const std::vector<size_t> &route, const DataPoint &
     return total_demand <= fleetProperties.capacity;
 }
 bool Problem::check_time_window(const std::vector<size_t> &route, const DataPoint &customer) const {
-    size_t load_time = 0;
+    auto load_time = 0.0f;
 
     for (size_t i = 0; i < route.size(); ++i) {
         let &next = data[route[i]];
@@ -83,14 +84,15 @@ bool Problem::check_time_window(const std::vector<size_t> &route, const DataPoin
         if (i > 0) {
             let &previous = data[route[i-1]];
             load_time = next.load_time(load_time, previous);
-            if (load_time > next.getDueDate()) {
+            let service = static_cast<float>(next.getService());
+            if (load_time - service> static_cast<float>(next.getDueDate())) {
                 return false;  // Time window constraint violated
             }
-            if(depot.load_time(load_time,previous)> depot.getDueDate()){
+            if(depot.load_time(load_time,previous)> static_cast<float>(depot.getDueDate())){
                 return false; // cant go back nie mozemy tu isc
             }
         } else {
-            load_time = next.getReadyTime();
+            load_time = static_cast<float>(next.getReadyTime());
         }
     }
     return true;
@@ -116,7 +118,7 @@ Solution Problem::get_initial_solution() const {
                 check_time_window(new_route, customer)) {
                 initial_solution.getRoutes().push_back(new_route);
             } else {
-                std::cerr<< "unable to create an acceptable initial solution.\n";
+                    std::cerr<< "unable to create an acceptable initial solution.\n";
                 initial_solution.setUnacceptable();
                 return initial_solution;
             }
@@ -124,6 +126,26 @@ Solution Problem::get_initial_solution() const {
     }
     return initial_solution;
 
+}
+
+float Problem::get_cost_function(const Solution &solution) const {
+   auto result = 0.0f;
+
+   for(let &route: solution.getRoutes()){
+       auto load_time = 0.0f;
+       auto previous_node = depot;
+       for(let node : route){
+           load_time += data[node].load_time(load_time, previous_node);
+           previous_node = data[node];
+       }
+       result += static_cast<float>(load_time) + depot.get_distance(previous_node);
+   }
+
+   return result;
+}
+
+size_t Problem::get_customer_number(size_t index) const {
+    return data[index].getCustomerNumber();
 }
 
 

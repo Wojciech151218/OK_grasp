@@ -12,9 +12,9 @@
 #include <iostream>
 
 namespace ResultSaver{
-    void save_solution(Solution solution ,const std::string & result_file){
+    void save_solution(Solution & solution ,Problem & problem,const std::string & result_file){
         let route_number = solution.get_routes_number();
-        let distance = solution.get_cost_function();
+        let distance = problem.get_cost_function(solution);
 
         std::ofstream file(result_file, std::ios::out);
 
@@ -32,7 +32,7 @@ namespace ResultSaver{
         }
         for(let route : solution.getRoutes()){
             for(let vertex : route){
-                file << vertex << " ";
+                file << problem.get_customer_number(vertex) << " ";
             }
             file << "\n";
         }
