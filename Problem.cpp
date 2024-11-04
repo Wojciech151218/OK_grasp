@@ -35,31 +35,32 @@ Problem::Problem(std::vector<DataPoint> _data, const FleetProperties &fleetPrope
 bool Problem::can_add_to_route(const std::vector<size_t> &route, const DataPoint &customer)const {
     size_t total_demand = 0;
     auto load_time = 0.0f;
-
+    if(customer.getReadyTime() > depot.getDueDate()){
+        return false;
+    }
 
     for (size_t i = 0; i < route.size(); ++i) {
         let &next = data[route[i]];
         total_demand += next.getDemand();
 
-        if(next.getReadyTime() > depot.getDueDate()){
-            return false;
-        }
+
         if (i > 0) {
             let &previous = data[route[i-1]] ;
 
             load_time = next.load_time(load_time, previous);
             let service = static_cast<float>(next.getService());
             if (load_time - service > static_cast<float>(next.getDueDate())) return false;
-            if(depot.load_time(load_time,previous)> static_cast<float>(depot.getDueDate())){
-                return false; // cant go back nie mozemy tu isc
-            }// Time window constraint violated
+            // Time window constraint violated
 
         }else {
             load_time = static_cast<float>(next.getReadyTime());
         }
     }
+    if(depot.load_time(load_time,customer)> static_cast<float>(depot.getDueDate())) {
+        return false; // cant go back nie mozemy tu isc
+    }
 
-    // Check capacity and time for the new customer
+        // Check capacity and time for the new customer
     total_demand += customer.getDemand();
     load_time = customer.load_time(load_time,data[route[route.size()-1]]);
 
@@ -73,13 +74,14 @@ bool Problem::check_capacity(const std::vector<size_t> &route, const DataPoint &
     return total_demand <= fleetProperties.capacity;
 }
 bool Problem::check_time_window(const std::vector<size_t> &route, const DataPoint &customer) const {
+
+    if(customer.getReadyTime() > depot.getDueDate()){
+        return false;
+    }
     auto load_time = 0.0f;
 
     for (size_t i = 0; i < route.size(); ++i) {
         let &next = data[route[i]];
-        if(next.getReadyTime() > depot.getDueDate()){
-            return false;
-        }
 
         if (i > 0) {
             let &previous = data[route[i-1]];
