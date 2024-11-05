@@ -10,12 +10,21 @@
 #include <iterator>
 #include <random>
 #include <vector>
+typedef  std::pair<Solution, float> RCL_tuple  ;
 
+void Problem::solve_grasp_rcl_util(std::vector<RCL_tuple> &rcl, const Solution & solution, float threshold, float previous_cost) const {
+    let cost = get_cost_function(solution);
+    if(cost > previous_cost*threshold) {
+        rcl.emplace_back(solution,cost);
+    }
 
-
-Solution Problem::solve_grasp(size_t epochs, float randomness_level) const {
+}
+Solution Problem::solve_grasp(size_t epochs, size_t rcl_size, float threshold) const {
     auto solution = get_initial_solution();
     auto current_cost = get_cost_function(solution);
+    std::vector<RCL_tuple> restricted_candidate_list = {};
+    std::random_device rd;
+    std::mt19937 rng(rd());
 
     solution.fit_to_constraints(fleetProperties.vehicle_number);
 
@@ -31,27 +40,23 @@ Solution Problem::solve_grasp(size_t epochs, float randomness_level) const {
                     for(auto second_route_index = 0 ; second_route_index < routes_size ; second_route_index++ ) {
 
                         if(first_route_index == second_route_index) continue;
+
+
                         let candidate_solution = solution.relocation(first_route_index,second_route_index,
                             first_route_index,second_route_index);
 
                         if(solution.is_legal(data,fleetProperties.capacity)) {
-                            let cost = get_cost_function(candidate_solution);
-                            if(cost < current_cost ) {
-                                current_cost = cost;
-                                solution = candidate_solution;
-                                goto next_epoch;
-                            }
+                            solve_grasp_rcl_util(restricted_candidate_list,candidate_solution,threshold,current_cost);
+                            if(restricted_candidate_list.size()>rcl_size) goto next_epoch;
                         }
+
                     }
 
                     auto candidate_solution = solution.swap(first_route_index,first_node,second_node);
+
                     if(solution.is_legal(data,fleetProperties.capacity)) {
-                        let cost = get_cost_function(candidate_solution);
-                        if(cost < current_cost ) {
-                            current_cost = cost;
-                            solution = candidate_solution;
-                            goto next_epoch;
-                        }
+                        solve_grasp_rcl_util(restricted_candidate_list,candidate_solution,threshold,current_cost);
+                        if(restricted_candidate_list.size()>rcl_size) goto next_epoch;
                     }
 
                     // candidate_solution = solution.two_opt(first_route_index,first_node,second_node);
@@ -66,7 +71,11 @@ Solution Problem::solve_grasp(size_t epochs, float randomness_level) const {
                 }
             }
         }
-        next_epoch:;
+        next_epoch:
+        std::uniform_int_distribution<size_t> dist(0, restricted_candidate_list.size()-1);
+        let next_neighbour = restricted_candidate_list[dist(rng)];
+        solution = next_neighbour.first;
+        current_cost = next_neighbour.second;
     }
     return solution;
 }

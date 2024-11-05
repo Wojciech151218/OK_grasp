@@ -1,1 +1,3 @@
-/usr/bin/c++ -g CMakeFiles/OK_grasp.dir/main.cpp.o CMakeFiles/OK_grasp.dir/DataPoint.cpp.o CMakeFiles/OK_grasp.dir/DataLoader.cpp.o CMakeFiles/OK_grasp.dir/Problem.cpp.o CMakeFiles/OK_grasp.dir/Graph.cpp.o CMakeFiles/OK_grasp.dir/Solution.cpp.o -o OK_grasp 
+C:\Users\Wojtek\AppData\Local\Programs\CLion\bin\cmake\win\x64\bin\cmake.exe -E rm -f CMakeFiles\OK_grasp.dir/objects.a
+C:\Users\Wojtek\AppData\Local\Programs\CLion\bin\mingw\bin\ar.exe qc CMakeFiles\OK_grasp.dir/objects.a @CMakeFiles\OK_grasp.dir\objects1.rsp
+C:\Users\Wojtek\AppData\Local\Programs\CLion\bin\mingw\bin\g++.exe -g -Wl,--whole-archive CMakeFiles\OK_grasp.dir/objects.a -Wl,--no-whole-archive -o OK_grasp.exe -Wl,--out-implib,libOK_grasp.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\OK_grasp.dir\linkLibs.rsp
