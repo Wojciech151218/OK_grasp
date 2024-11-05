@@ -9,6 +9,6 @@ int main() {
     auto fleet_properties = DataLoader::load_fleet_properties(file_path);
     auto depot = DataLoader::load_depot(file_path);
     auto problem = Problem(data,fleet_properties,depot);
-    auto solution = problem.solve_grasp(0, 0);
-    ResultSaver::save_solution(solution,problem,R"(C:\Users\Wojciech\CLionProjects\OK_grasp\result)");
+    auto solution = problem.solve_grasp(10, 0);
+    ResultSaver::save_solution(solution,problem,"../result.txt");
 }

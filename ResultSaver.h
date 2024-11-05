@@ -31,6 +31,7 @@ namespace ResultSaver{
             return;
         }
         for(let route : solution.getRoutes()){
+            if(route.empty())continue;
             for(let vertex : route){
                 file << problem.get_customer_number(vertex) << " ";
             }

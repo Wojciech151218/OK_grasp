@@ -21,10 +21,10 @@ public:
     float get_cost_function(const Solution & solution) const;
     size_t get_customer_number(size_t index) const;
 private:
+
     Solution get_initial_solution() const;
-    bool Problem::can_add_to_route(const std::vector<size_t> &route, const DataPoint &customer)const;
-    bool check_capacity(const std::vector<size_t> &route, const DataPoint &customer) const ;
-    bool check_time_window(const std::vector<size_t> &route, const DataPoint &customer)const ;
+    bool can_add_to_route(const std::vector<size_t> &route, const DataPoint &customer)const;
+
 private:
     std::vector<DataPoint> data;
     Graph distance_graph;

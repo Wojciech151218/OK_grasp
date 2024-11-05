@@ -45,12 +45,13 @@ float DataPoint::load_time(float previous_load_time, const DataPoint & previous_
     let next_available_time = static_cast<float>(ready_time);
 
 
-    let finish_time =static_cast<float>( previous_load_time);
+    let finish_time = previous_load_time;
     let previous_reload_time = static_cast<float>( previous_vertex.getService());
     let distance =  get_distance(previous_vertex) ;
 
 
-    return std::max(finish_time + previous_reload_time + distance + service , next_available_time);
+    return std::max(finish_time + previous_reload_time + distance + static_cast<float>(service) ,
+        next_available_time+static_cast<float>(service));
 }
 
 unsigned int DataPoint::getCustomerNumber() const {

@@ -8,6 +8,7 @@
 #include <vector>
 #include <random>
 #include <algorithm>
+#include <stdexcept>
 
 typedef std::mt19937 rng_type;
 rng_type rng(std::random_device{}()); // Initialize the random number generator
@@ -18,123 +19,63 @@ Solution::Solution(const Graph  & graph): graph(graph), unacceptable(false){}
 
 
 
-Solution Solution::relocation() {
-    Solution new_solution = *this;
+Solution Solution::relocation(size_t route, size_t target_route, size_t index, size_t target_index) const {
+    Solution new_solution = *this;  // Create a copy of the current solution
 
-    // Select a source vehicle route with at least 2 nodes
-    size_t source_vehicle;
-    std::uniform_int_distribution<size_t> vehicle_dist(0, routes.size() - 1);
-    do {
-        source_vehicle = vehicle_dist(rng);
-    } while (new_solution.routes[source_vehicle].size() < 2);
+    // Check if the specified route and index are within bounds
+    if (route >= new_solution.routes.size() || index >= new_solution.routes[route].size() ||
+        target_route >= new_solution.routes.size()) {
+        throw std::out_of_range("Invalid route or index in relocation operation");
+        }
 
-    // Select the node to relocate
-    auto &source_route = new_solution.routes[source_vehicle];
-    std::uniform_int_distribution<size_t> node_dist(0, source_route.size() - 1);
-    size_t node_index = node_dist(rng);
-    size_t node_to_move = source_route[node_index];
+    // Get a reference to the source and target routes
+    auto& source_route = new_solution.routes[route];
+    auto& destination_route = new_solution.routes[target_route];
+
+    // Extract the node to relocate
+    auto node_to_relocate = source_route[index];
 
     // Remove the node from the source route
-    source_route.erase(source_route.begin() + node_index);
+    source_route.erase(source_route.begin() + index);
 
-    // Select a destination vehicle (could be the same as source)
-    size_t destination_vehicle = vehicle_dist(rng);
-    auto &destination_route = new_solution.routes[destination_vehicle];
+    // Insert the node into the target route at the specified position
+    if (target_index > destination_route.size()) {
+        target_index = destination_route.size(); // Insert at end if target_index is out of bounds
+    }
+    destination_route.insert(destination_route.begin() + target_index, node_to_relocate);
 
-    // Select insertion position within the destination route
-    std::uniform_int_distribution<size_t> insert_dist(0, destination_route.size());
-    size_t insert_position = insert_dist(rng);
-
-    // Insert the node at the new position
-    destination_route.insert(destination_route.begin() + insert_position, node_to_move);
-
+    // Return the modified solution with the relocated node
     return new_solution;
 }
 
 
-Solution Solution::three_opt() {
-    Solution new_solution = *this;
+Solution Solution::two_opt(size_t route_index, size_t start_index, size_t end_index) const{
+    Solution new_solution = *this;  // Copy the current solution
 
-    // Select a vehicle route with at least 4 nodes
-    size_t vehicle_index;
-    std::uniform_int_distribution<size_t> vehicle_dist(0, routes.size() - 1);
-    do {
-        vehicle_index = vehicle_dist(rng);
-    } while (new_solution.routes[vehicle_index].size() < 4);
+    // Check if the specified route and indices are within bounds
+    if (route_index >= new_solution.routes.size() ||
+        start_index >= new_solution.routes[route_index].size() ||
+        end_index >= new_solution.routes[route_index].size() ||
+        start_index >= end_index) {
+        throw std::out_of_range("Invalid route or index in two_opt operation");
+        }
 
-    auto &route = new_solution.routes[vehicle_index];
-    std::uniform_int_distribution<size_t> node_dist(0, route.size() - 1);
+    // Get a reference to the specific route to modify
+    auto& route = new_solution.routes[route_index];
 
-    // Select three breakpoints a, b, and c, where a < b < c
-    size_t a = node_dist(rng) % (route.size() - 3);
-    size_t b = a + 1 + (node_dist(rng) % (route.size() - a - 2));
-    size_t c = b + 1 + (node_dist(rng) % (route.size() - b - 1));
+    // Reverse the segment between start_index and end_index (inclusive)
+    std::reverse(route.begin() + start_index, route.begin() + end_index + 1);
 
-    // Split the route into three segments and rearrange
-    std::vector<size_t> segment1(route.begin(), route.begin() + a + 1);
-    std::vector<size_t> segment2(route.begin() + a + 1, route.begin() + b + 1);
-    std::vector<size_t> segment3(route.begin() + b + 1, route.begin() + c + 1);
-
-    // Concatenate segments in a different order
-    route = segment1;
-    route.insert(route.end(), segment3.begin(), segment3.end());
-    route.insert(route.end(), segment2.begin(), segment2.end());
-
-    return new_solution;
-}
-
-
-Solution Solution::two_opt() {
-    Solution new_solution = *this;
-
-    // Select a vehicle route with at least 3 nodes
-    size_t vehicle_index;
-    std::uniform_int_distribution<size_t> vehicle_dist(0, routes.size() - 1);
-    do {
-        vehicle_index = vehicle_dist(rng);
-    } while (new_solution.routes[vehicle_index].size() < 3);
-
-    auto &route = new_solution.routes[vehicle_index];
-    std::uniform_int_distribution<size_t> node_dist(0, route.size() - 1);
-
-    // Select two indices i and j where i < j
-    size_t i = node_dist(rng);
-    size_t j;
-    do {
-        j = node_dist(rng);
-    } while (i >= j);  // Ensure that i < j
-
-    // Reverse the section between i and j
-    std::reverse(route.begin() + i, route.begin() + j + 1);
-
+    // Return the modified solution with the updated route
     return new_solution;
 }
 
 
 
-Solution Solution::swap() {
+
+Solution Solution::swap(size_t route_number, size_t node_a, size_t node_b) const{
     Solution new_solution = *this;
-
-    // Randomly select a vehicle route with at least 2 nodes
-    size_t vehicle_index;
-    std::uniform_int_distribution<size_t> vehicle_dist(0, routes.size() - 1);
-    do {
-        vehicle_index = vehicle_dist(rng);
-    } while (new_solution.routes[vehicle_index].size() < 2);
-
-    // Get the route of the selected vehicle
-    auto &route = new_solution.routes[vehicle_index];
-    std::uniform_int_distribution<size_t> node_dist(0, route.size() - 1);
-
-    // Select two distinct indices for swapping
-    size_t i = node_dist(rng);
-    size_t j;
-    do {
-        j = node_dist(rng);
-    } while (i == j);  // Ensure that i and j are different
-
-    // Perform the swap
-    std::swap(route[i], route[j]);
+    std::swap(new_solution.routes[route_number][node_a] ,new_solution.routes[route_number][node_b]);
 
     return new_solution;
 }
@@ -142,7 +83,7 @@ bool Solution::is_legal(const std::vector<DataPoint> & data, size_t capacity) co
 
     for (let &route : routes) {
         size_t total_demand = 0;  // Sum of demands in the current route
-        size_t load_time = 0;     // Initial load time (start from the depot)
+        float load_time = 0.0f;     // Initial load time (start from the depot)
 
         for (size_t i = 0; i < route.size(); ++i) {
             let &current_vertex = data[route[i]];
@@ -159,11 +100,11 @@ bool Solution::is_legal(const std::vector<DataPoint> & data, size_t capacity) co
                 load_time = current_vertex.load_time(load_time, previous_vertex);
             } else {
                 // First stop after the depot, set load time to earliest ready time if starting from the depot
-                load_time = current_vertex.getReadyTime();
+                load_time = static_cast<float>(current_vertex.getReadyTime());
             }
 
             // Check if arrival time respects the due time
-            if (load_time > current_vertex.getDueDate()) {
+            if (load_time >  static_cast<float>(current_vertex.getDueDate())) {
                 return false;  // Time window constraint violated
             }
         }
@@ -176,7 +117,7 @@ std::vector<std::vector<size_t>> &Solution::getRoutes()  {
 
 }
 
-float Solution::get_routes_number() const {
+size_t Solution::get_routes_number() const {
     return routes.size();
 }
 
@@ -186,6 +127,17 @@ bool Solution::is_unacceptable() const {
 
 void Solution::setUnacceptable() {
     Solution::unacceptable = true;
+}
+
+void Solution::fit_to_constraints(size_t vehicle_amount) {
+    const int missing_routes = static_cast<int>(vehicle_amount) - routes.size();
+    if(missing_routes > 0) {
+        for (auto i =0;i<missing_routes;i++) {
+            routes.emplace_back();
+        }
+        return;
+    }
+    //todo
 }
 
 std::vector<std::vector<size_t>> Solution::getRoutes() const {

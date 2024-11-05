@@ -13,15 +13,62 @@
 
 
 
-Solution Problem::solve_grasp(size_t epochs, float randomness_level) const  {
+Solution Problem::solve_grasp(size_t epochs, float randomness_level) const {
+    auto solution = get_initial_solution();
+    auto current_cost = get_cost_function(solution);
 
-    let solution = get_initial_solution();
+    solution.fit_to_constraints(fleetProperties.vehicle_number);
+
     for (int i = 0; i < epochs; ++i) {
-        //todo
+        let routes_size = solution.get_routes_number();
+
+        for (auto first_route_index = 0 ; first_route_index < routes_size ; first_route_index++  ) {
+            for (let & first_node : solution.getRoutes()[first_route_index]) {
+                for (let & second_node : solution.getRoutes()[first_route_index]) {
+
+                    if(first_node == second_node) continue;
+
+                    for(auto second_route_index = 0 ; second_route_index < routes_size ; second_route_index++ ) {
+
+                        if(first_route_index == second_route_index) continue;
+                        let candidate_solution = solution.relocation(first_route_index,second_route_index,
+                            first_route_index,second_route_index);
+
+                        if(solution.is_legal(data,fleetProperties.capacity)) {
+                            let cost = get_cost_function(candidate_solution);
+                            if(cost < current_cost ) {
+                                current_cost = cost;
+                                solution = candidate_solution;
+                                goto next_epoch;
+                            }
+                        }
+                    }
+
+                    auto candidate_solution = solution.swap(first_route_index,first_node,second_node);
+                    if(solution.is_legal(data,fleetProperties.capacity)) {
+                        let cost = get_cost_function(candidate_solution);
+                        if(cost < current_cost ) {
+                            current_cost = cost;
+                            solution = candidate_solution;
+                            goto next_epoch;
+                        }
+                    }
+
+                    // candidate_solution = solution.two_opt(first_route_index,first_node,second_node);
+                    // if(solution.is_legal(data,fleetProperties.capacity)) {
+                    //     let cost = get_cost_function(candidate_solution);
+                    //     if(cost < current_cost ) {
+                    //         current_cost = cost;
+                    //         solution = candidate_solution;
+                    //         goto next_epoch;
+                    //     }
+                    // }
+                }
+            }
+        }
+        next_epoch:;
     }
     return solution;
-
-    
 }
 
 Problem::Problem(std::vector<DataPoint> _data, const FleetProperties &fleetProperties, const DataPoint &depot)
@@ -33,7 +80,8 @@ Problem::Problem(std::vector<DataPoint> _data, const FleetProperties &fleetPrope
     distance_graph = Graph(_data, depot);
 }
 bool Problem::can_add_to_route(const std::vector<size_t> &route, const DataPoint &customer)const {
-    size_t total_demand = 0;
+    size_t total_demand = customer.getDemand();
+;
     auto load_time = 0.0f;
     if(customer.getReadyTime() > depot.getDueDate()){
         return false;
@@ -56,48 +104,12 @@ bool Problem::can_add_to_route(const std::vector<size_t> &route, const DataPoint
             load_time = static_cast<float>(next.getReadyTime());
         }
     }
+    load_time = route.empty() ? static_cast<float>(depot.getReadyTime()) : customer.load_time(load_time,data[route[route.size()-1]]);
     if(depot.load_time(load_time,customer)> static_cast<float>(depot.getDueDate())) {
         return false; // cant go back nie mozemy tu isc
     }
 
-        // Check capacity and time for the new customer
-    total_demand += customer.getDemand();
-    load_time = customer.load_time(load_time,data[route[route.size()-1]]);
-
     return total_demand <= fleetProperties.capacity && load_time <= static_cast<float>(customer.getDueDate());
-}
-bool Problem::check_capacity(const std::vector<size_t> &route, const DataPoint &customer) const {
-    size_t total_demand = 0;
-    for (let &i : route) {
-        total_demand += data[i].getDemand();
-    }
-    return total_demand <= fleetProperties.capacity;
-}
-bool Problem::check_time_window(const std::vector<size_t> &route, const DataPoint &customer) const {
-
-    if(customer.getReadyTime() > depot.getDueDate()){
-        return false;
-    }
-    auto load_time = 0.0f;
-
-    for (size_t i = 0; i < route.size(); ++i) {
-        let &next = data[route[i]];
-
-        if (i > 0) {
-            let &previous = data[route[i-1]];
-            load_time = next.load_time(load_time, previous);
-            let service = static_cast<float>(next.getService());
-            if (load_time - service> static_cast<float>(next.getDueDate())) {
-                return false;  // Time window constraint violated
-            }
-            if(depot.load_time(load_time,previous)> static_cast<float>(depot.getDueDate())){
-                return false; // cant go back nie mozemy tu isc
-            }
-        } else {
-            load_time = static_cast<float>(next.getReadyTime());
-        }
-    }
-    return true;
 }
 
 
@@ -115,9 +127,9 @@ Solution Problem::get_initial_solution() const {
             }
         }
         if (!placed) {
-            std::vector<size_t> new_route = {index};
-            if (check_capacity(new_route, customer) &&
-                check_time_window(new_route, customer)) {
+            std::vector<size_t> new_route = {};
+            if (can_add_to_route(new_route,customer) ){
+                new_route.push_back(index);
                 initial_solution.getRoutes().push_back(new_route);
             } else {
                     std::cerr<< "unable to create an acceptable initial solution.\n";
@@ -140,7 +152,7 @@ float Problem::get_cost_function(const Solution &solution) const {
            load_time += data[node].load_time(load_time, previous_node);
            previous_node = data[node];
        }
-       result += static_cast<float>(load_time) + depot.get_distance(previous_node);
+       result += load_time + depot.get_distance(previous_node);
    }
 
    return result;
