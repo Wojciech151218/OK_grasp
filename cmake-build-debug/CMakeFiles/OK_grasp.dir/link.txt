@@ -1,0 +1,1 @@
+/usr/bin/c++ -g CMakeFiles/OK_grasp.dir/main.cpp.o CMakeFiles/OK_grasp.dir/DataPoint.cpp.o CMakeFiles/OK_grasp.dir/DataLoader.cpp.o CMakeFiles/OK_grasp.dir/Problem.cpp.o CMakeFiles/OK_grasp.dir/Graph.cpp.o CMakeFiles/OK_grasp.dir/Solution.cpp.o -o OK_grasp 
