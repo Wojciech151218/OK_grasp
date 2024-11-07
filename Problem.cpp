@@ -10,7 +10,7 @@
 #include <iterator>
 #include <random>
 #include <vector>
-typedef  std::pair<Solution, float> RCL_tuple  ;
+
 
 void Problem::solve_grasp_rcl_util(std::vector<RCL_tuple> &rcl, const Solution & solution, float threshold, float previous_cost) const {
     let cost = get_cost_function(solution);
@@ -26,7 +26,7 @@ Solution Problem::solve_grasp(size_t epochs, size_t rcl_size, float threshold) c
     std::random_device rd;
     std::mt19937 rng(rd());
 
-    solution.fit_to_constraints(fleetProperties.vehicle_number);
+    solution.fit_to_constraints(fleetProperties.vehicle_number, fleetProperties.capacity, data, TODO);
 
     for (int i = 0; i < epochs; ++i) {
         let routes_size = solution.get_routes_number();
@@ -72,10 +72,13 @@ Solution Problem::solve_grasp(size_t epochs, size_t rcl_size, float threshold) c
             }
         }
         next_epoch:
-        std::uniform_int_distribution<size_t> dist(0, restricted_candidate_list.size()-1);
-        let next_neighbour = restricted_candidate_list[dist(rng)];
-        solution = next_neighbour.first;
-        current_cost = next_neighbour.second;
+        if(not restricted_candidate_list.empty()) {
+            std::uniform_int_distribution<size_t> dist(0, restricted_candidate_list.size()-1);
+            let candidate_number = dist(rng);
+            let& next_neighbour = restricted_candidate_list[candidate_number];
+            solution = next_neighbour.first;
+            current_cost = next_neighbour.second;
+        }
     }
     return solution;
 }

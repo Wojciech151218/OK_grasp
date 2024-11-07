@@ -22,7 +22,7 @@ public:
     void setUnacceptable();
 
 public:
-    void fit_to_constraints(size_t vehicle_amount);
+    size_t fit_to_constraints(size_t vehicle_amount, size_t capacity, const std::vector<DataPoint> &data, size_t epochs);
     size_t get_routes_number() const ;
     Solution swap(size_t route_number, size_t node_a, size_t node_b)const;
     Solution two_opt(size_t route_index, size_t start_index, size_t end_index) const;
