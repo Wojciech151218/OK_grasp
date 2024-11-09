@@ -4,7 +4,7 @@
 
 #ifndef OK_GRASP_UTILS_H
 #define OK_GRASP_UTILS_H
-
+#include "Solution.h"
 #define let const auto
 typedef  std::pair<Solution, float> RCL_tuple  ;
 
@@ -19,10 +19,10 @@ size_t count_empty_vectors(const std::vector<std::vector<T>> & vector_of_vectors
     return  emptyCount;
 }
 template<typename T= size_t>
-size_t remove_empty_vectors( std::vector<std::vector<T>> & vector_of_vectors) {
+void remove_empty_vectors(std::vector<std::vector<T> > &vector_of_vectors) {
     vector_of_vectors.erase(
         std::remove_if(vector_of_vectors.begin(), vector_of_vectors.end(),
-                       [](const std::vector<int>& innerVec) { return innerVec.empty(); }),
+                       [](const std::vector<T>& innerVec) { return innerVec.empty(); }),
         vector_of_vectors.end());
 }
 

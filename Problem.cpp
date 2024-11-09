@@ -10,7 +10,7 @@
 #include <iterator>
 #include <random>
 #include <vector>
-
+#include <functional>
 
 void Problem::solve_grasp_rcl_util(std::vector<RCL_tuple> &rcl, const Solution & solution, float threshold, float previous_cost) const {
     let cost = get_cost_function(solution);
@@ -19,59 +19,51 @@ void Problem::solve_grasp_rcl_util(std::vector<RCL_tuple> &rcl, const Solution &
     }
 
 }
+
 Solution Problem::solve_grasp(size_t epochs, size_t rcl_size, float threshold) const {
     auto solution = get_initial_solution();
+    add_missing_routes(solution);
     auto current_cost = get_cost_function(solution);
-    std::vector<RCL_tuple> restricted_candidate_list = {};
     std::random_device rd;
     std::mt19937 rng(rd());
 
-    solution.fit_to_constraints(fleetProperties.vehicle_number, fleetProperties.capacity, data, TODO);
+    //remove_empty_vectors(solution.getRoutes());
+
+    auto cost_goal = [threshold, current_cost,rcl_size, this](std::vector<RCL_tuple> &rcl,const Solution & solution) {
+        let cost = get_cost_function(solution);
+        if(cost < current_cost*threshold)
+            rcl.emplace_back(solution,cost);
+        return rcl.size() > rcl_size/3;
+    };
+    auto route_number_goal = [this, rcl_size](std::vector<RCL_tuple> &rcl,const Solution & solution) {
+        let empty_routes = count_empty_vectors(solution.getRoutes());
+        static std::random_device rd;
+        static std::mt19937 rng(rd());
+        std::uniform_real_distribution<float> dist(0.0, rcl_size);
+        auto probability = rcl.size()/rcl_size;
+        if(empty_routes > 0 or dist(rng) < probability)
+            rcl.emplace_back(solution,0.0);
+        return rcl.size() > rcl_size;
+
+    };
+
+    std::function<bool(std::vector<RCL_tuple>&, const Solution&)> lambda;
 
     for (int i = 0; i < epochs; ++i) {
-        let routes_size = solution.get_routes_number();
+        if(solution.get_routes_number()<= fleetProperties.vehicle_number)
+            lambda = cost_goal;
+        else
+            lambda = route_number_goal;
 
-        for (auto first_route_index = 0 ; first_route_index < routes_size ; first_route_index++  ) {
-            for (let & first_node : solution.getRoutes()[first_route_index]) {
-                for (let & second_node : solution.getRoutes()[first_route_index]) {
+        std::vector<RCL_tuple> restricted_candidate_list = {};
 
-                    if(first_node == second_node) continue;
+        if(perform_swaps(restricted_candidate_list,solution,lambda)){}
 
-                    for(auto second_route_index = 0 ; second_route_index < routes_size ; second_route_index++ ) {
+        if(perform_relocations(restricted_candidate_list,solution,lambda)){}
 
-                        if(first_route_index == second_route_index) continue;
+        if(perform_two_opt(restricted_candidate_list,solution,lambda)){}
 
 
-                        let candidate_solution = solution.relocation(first_route_index,second_route_index,
-                            first_route_index,second_route_index);
-
-                        if(solution.is_legal(data,fleetProperties.capacity)) {
-                            solve_grasp_rcl_util(restricted_candidate_list,candidate_solution,threshold,current_cost);
-                            if(restricted_candidate_list.size()>rcl_size) goto next_epoch;
-                        }
-
-                    }
-
-                    auto candidate_solution = solution.swap(first_route_index,first_node,second_node);
-
-                    if(solution.is_legal(data,fleetProperties.capacity)) {
-                        solve_grasp_rcl_util(restricted_candidate_list,candidate_solution,threshold,current_cost);
-                        if(restricted_candidate_list.size()>rcl_size) goto next_epoch;
-                    }
-
-                    // candidate_solution = solution.two_opt(first_route_index,first_node,second_node);
-                    // if(solution.is_legal(data,fleetProperties.capacity)) {
-                    //     let cost = get_cost_function(candidate_solution);
-                    //     if(cost < current_cost ) {
-                    //         current_cost = cost;
-                    //         solution = candidate_solution;
-                    //         goto next_epoch;
-                    //     }
-                    // }
-                }
-            }
-        }
-        next_epoch:
         if(not restricted_candidate_list.empty()) {
             std::uniform_int_distribution<size_t> dist(0, restricted_candidate_list.size()-1);
             let candidate_number = dist(rng);
@@ -173,5 +165,114 @@ float Problem::get_cost_function(const Solution &solution) const {
 size_t Problem::get_customer_number(size_t index) const {
     return data[index].getCustomerNumber();
 }
+
+void Problem::add_missing_routes(Solution &solution) const {
+    int missing_routes = static_cast<int>(fleetProperties.vehicle_number) - solution.get_routes_number();
+    if(missing_routes > 0) {
+        for (auto i =0;i<missing_routes;i++) {
+            solution.getRoutes().emplace_back();
+        }
+    }
+}
+
+
+template <typename Func>
+bool Problem::perform_swaps(std::vector<RCL_tuple>& rcl, const Solution& solution, Func goal) const {
+    const auto& routes = solution.getRoutes();  // Access the routes directly once
+    size_t route_count = routes.size();
+
+    // Loop through each route by index
+    for (size_t route_number = 0; route_number < route_count; ++route_number) {
+        const auto& route = routes[route_number];
+        size_t route_size = route.size();
+
+        // Loop through each pair of nodes by index within the route
+        for (size_t first_index = 0; first_index < route_size; ++first_index) {
+            for (size_t second_index = 0; second_index < route_size; ++second_index) {
+
+                // Skip if the indices are the same, to avoid self-swap
+                if (first_index == second_index) continue;
+
+                // Create a candidate solution by swapping the nodes at first_index and second_index
+                auto candidate_solution = solution.swap(route_number, first_index, second_index);
+
+                // Check if the candidate solution is legal
+                if (candidate_solution.is_legal(data, fleetProperties.capacity)) {
+                    // Evaluate the candidate solution with the goal function
+                    if (goal(rcl, candidate_solution)) return true;  // Stop if the goal is satisfied
+                }
+            }
+        }
+    }
+
+    return false;  // Return false if no satisfactory solution was found
+}
+
+template <typename Func>
+bool Problem::perform_relocations(std::vector<RCL_tuple> &rcl, const Solution &solution, Func goal) const {
+    auto routes = solution.getRoutes();
+    size_t route_count = routes.size();
+
+    // Loop over each route as a source route for relocation
+    for (size_t source_route_index = 0; source_route_index < route_count; ++source_route_index) {
+        const auto& source_route = routes[source_route_index];
+
+        // Loop through each node in the source route
+        for (size_t node_index = 0; node_index < source_route.size(); ++node_index) {
+
+            // Try relocating this node into each target route
+            for (size_t target_route_index = 0; target_route_index < route_count; ++target_route_index) {
+
+                // Skip relocation within the same route
+                if (source_route_index == target_route_index) continue;
+
+                const auto& target_route = routes[target_route_index];
+
+                // Attempt relocation to every position in the target route
+                for (size_t target_position = 0; target_position <= target_route.size(); ++target_position) {
+                    // Create a candidate solution with relocation
+                    auto candidate_solution = solution.relocation(source_route_index, target_route_index, node_index, target_position);
+
+                    // Check if the candidate solution is legal (meets constraints)
+                    if (candidate_solution.is_legal(data, fleetProperties.capacity)) {
+                        // Evaluate candidate solution with the goal function
+                        if(goal(rcl, candidate_solution)) return true;
+                    }
+                }
+            }
+        }
+    }
+    return false;
+}
+template <typename Func>
+bool Problem::perform_two_opt(std::vector<RCL_tuple>& rcl, const Solution& solution, Func goal) const {
+    auto routes = solution.getRoutes();
+    size_t route_count = routes.size();
+
+    // Loop over each route to apply two-opt within each route
+    for (size_t route_index = 0; route_index < route_count; ++route_index) {
+        const auto& route = routes[route_index];
+        size_t route_size = route.size();
+
+        // Loop through each possible segment within the route
+        for (size_t start_index = 0; start_index < route_size - 1; ++start_index) {
+            for (size_t end_index = start_index + 1; end_index < route_size; ++end_index) {
+
+                // Create a candidate solution by applying two-opt to the segment
+                auto candidate_solution = solution.two_opt(route_index, start_index, end_index);
+
+                // Check if the candidate solution is legal (meets constraints)
+                if (candidate_solution.is_legal(data, fleetProperties.capacity)) {
+                    // Evaluate candidate solution with the goal function
+                    if (goal(rcl, candidate_solution)) return true;  // Stop if goal is satisfied
+                }
+            }
+        }
+    }
+    return false;  // Return false if no satisfactory solution was found
+}
+
+
+
 
 

@@ -129,71 +129,7 @@ void Solution::setUnacceptable() {
     unacceptable = true;
 }
 
-size_t Solution::fit_to_constraints(size_t vehicle_amount, size_t capacity, const  std::vector<DataPoint> &data, size_t epochs) {
-    int missing_routes = static_cast<int>(vehicle_amount) - routes.size();
-    if(missing_routes > 0) {
-        for (auto i =0;i<missing_routes;i++) {
-            routes.emplace_back();
-        }
-        return epochs;
-    }
-    auto epochsCount = epochs;
-    std::vector<Solution> restricted_candidate_list = {};
-    std::random_device rd;
-    std::mt19937 rng(rd());
 
-     while(routes.size() ==  vehicle_amount || epochs<0){
-        let routes_size = get_routes_number();
-
-        for (auto first_route_index = 0 ; first_route_index < routes_size ; first_route_index++  ) {
-            for (let & first_node : routes[first_route_index]) {
-                for (let & second_node :routes[first_route_index]) {
-
-                    if(first_node == second_node) continue;
-
-                    for(auto second_route_index = 0 ; second_route_index < routes_size ; second_route_index++ ) {
-
-                        if(first_route_index == second_route_index) continue;
-
-
-                        let candidate_solution = relocation(first_route_index,second_route_index,
-                            first_route_index,second_route_index);
-
-                        if(candidate_solution.is_legal(data,capacity)) {
-
-                        }
-
-                    }
-
-                    auto candidate_solution = swap(first_route_index,first_node,second_node);
-
-                    if(is_legal(data,capacity)) {
-
-                    }
-
-                    // candidate_solution = solution.two_opt(first_route_index,first_node,second_node);
-                    // if(solution.is_legal(data,fleetProperties.capacity)) {
-                    //     let cost = get_cost_function(candidate_solution);
-                    //     if(cost < current_cost ) {
-                    //         current_cost = cost;
-                    //         solution = candidate_solution;
-                    //         goto next_epoch;
-                    //     }
-                    // }
-                }
-            }
-        }
-        next_epoch:
-        epochsCount--;
-        if(not restricted_candidate_list.empty()) {
-            std::uniform_int_distribution<size_t> dist(0, restricted_candidate_list.size()-1);
-            let candidate_number = dist(rng);
-            let& next_neighbour = restricted_candidate_list[candidate_number];
-            *this = next_neighbour;
-        }
-    }
-    return epochsCount;
-}
 
 
 std::vector<std::vector<size_t>> Solution::getRoutes() const {
