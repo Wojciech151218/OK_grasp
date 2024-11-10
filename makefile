@@ -1,4 +1,3 @@
-
 # Compiler
 CXX = g++
 
@@ -8,18 +7,27 @@ CXXFLAGS = -Wall -std=c++11
 # Target executable
 TARGET = ok_grasp
 
-# List of source files
-SRCS = main.cpp DataLoader.cpp DataPoint.cpp Graph.cpp Problem.cpp Solution.cpp
+# List of source files (only .cpp files)
+SRCS = main.cpp DataPoint.cpp DataLoader.cpp Problem.cpp Graph.cpp Solution.cpp utils.cpp
 
 # Object files (replace .cpp with .o)
 OBJS = $(SRCS:.cpp=.o)
 
+# OS-specific adjustments
+ifeq ($(OS), Windows_NT)
+    RM = del /Q
+    EXE = .exe
+else
+    RM = rm -f
+    EXE =
+endif
+
 # Default target
-all: $(TARGET)
+all: $(TARGET)$(EXE)
 
 # Link object files to create the executable
-$(TARGET): $(OBJS)
-	$(CXX) $(OBJS) -o $(TARGET)
+$(TARGET)$(EXE): $(OBJS)
+	$(CXX) $(OBJS) -o $(TARGET)$(EXE)
 
 # Compile each .cpp file into an .o file
 %.o: %.cpp
@@ -27,4 +35,4 @@ $(TARGET): $(OBJS)
 
 # Clean up build files
 clean:
-	rm -f $(OBJS) $(TARGET)
+	$(RM) $(OBJS) $(TARGET)$(EXE)

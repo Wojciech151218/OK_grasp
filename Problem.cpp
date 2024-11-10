@@ -12,64 +12,63 @@
 #include <vector>
 #include <functional>
 
-void Problem::solve_grasp_rcl_util(std::vector<RCL_tuple> &rcl, const Solution & solution, float threshold, float previous_cost) const {
-    let cost = get_cost_function(solution);
-    if(cost > previous_cost*threshold) {
-        rcl.emplace_back(solution,cost);
-    }
 
-}
 
-Solution Problem::solve_grasp(size_t epochs, size_t rcl_size, float threshold) const {
+Solution Problem::solve_grasp(size_t epochs, size_t rcl_max_size, float momentum_rate) const {
     auto solution = get_initial_solution();
     add_missing_routes(solution);
-    auto current_cost = get_cost_function(solution);
+    auto current_cost = INFINITY;
+    auto previous_rcl_size = 0;
     std::random_device rd;
     std::mt19937 rng(rd());
 
     //remove_empty_vectors(solution.getRoutes());
 
-    auto cost_goal = [threshold, current_cost,rcl_size, this](std::vector<RCL_tuple> &rcl,const Solution & solution) {
-        let cost = get_cost_function(solution);
-        if(cost < current_cost*threshold)
+    auto cost_goal = [momentum_rate, &current_cost,rcl_max_size,&previous_rcl_size, this](std::vector<RCL_tuple> &rcl, const Solution & solution) {
+        let excessive_routes =  solution.get_routes_number()>fleetProperties.vehicle_number?
+                                solution.get_routes_number()-fleetProperties.vehicle_number - count_empty_vectors(solution.getRoutes()):0;
+        let cost = get_cost_function(solution)*(excessive_routes +1);
+        let momentum =(1.0-momentum_rate) + static_cast<float>( previous_rcl_size) * momentum_rate / rcl_max_size;
+        let cost_after_evaluation = cost * momentum;
+        if(cost_after_evaluation < current_cost)
             rcl.emplace_back(solution,cost);
-        return rcl.size() > rcl_size/3;
-    };
-    auto route_number_goal = [this, rcl_size](std::vector<RCL_tuple> &rcl,const Solution & solution) {
-        let empty_routes = count_empty_vectors(solution.getRoutes());
-        static std::random_device rd;
-        static std::mt19937 rng(rd());
-        std::uniform_real_distribution<float> dist(0.0, rcl_size);
-        auto probability = rcl.size()/rcl_size;
-        if(empty_routes > 0 or dist(rng) < probability)
-            rcl.emplace_back(solution,0.0);
-        return rcl.size() > rcl_size;
-
+        return rcl.size() > rcl_max_size / 3;
     };
 
-    std::function<bool(std::vector<RCL_tuple>&, const Solution&)> lambda;
+
+    std::vector<RCL_tuple> restricted_candidate_list = {};
+    std::vector<RCL_tuple> previous_restricted_candidate_list = {};
 
     for (int i = 0; i < epochs; ++i) {
-        if(solution.get_routes_number()<= fleetProperties.vehicle_number)
-            lambda = cost_goal;
-        else
-            lambda = route_number_goal;
-
-        std::vector<RCL_tuple> restricted_candidate_list = {};
-
-        if(perform_swaps(restricted_candidate_list,solution,lambda)){}
-
-        if(perform_relocations(restricted_candidate_list,solution,lambda)){}
-
-        if(perform_two_opt(restricted_candidate_list,solution,lambda)){}
+        if(i%10==0){
+            std::cout<< i << " cost " << current_cost << " size "<<solution.get_routes_number() <<"\n";
+        }
+        previous_rcl_size = previous_restricted_candidate_list.size();
 
 
-        if(not restricted_candidate_list.empty()) {
+        if(perform_swaps(restricted_candidate_list,solution,cost_goal)){}
+
+        if(perform_relocations(restricted_candidate_list,solution,cost_goal)){}
+
+        if(perform_two_opt(restricted_candidate_list,solution,cost_goal)){}
+
+
+        if(! restricted_candidate_list.empty()) {
             std::uniform_int_distribution<size_t> dist(0, restricted_candidate_list.size()-1);
             let candidate_number = dist(rng);
             let& next_neighbour = restricted_candidate_list[candidate_number];
             solution = next_neighbour.first;
             current_cost = next_neighbour.second;
+            remove_empty_vectors(solution.getRoutes());
+            previous_restricted_candidate_list = restricted_candidate_list;
+            restricted_candidate_list.clear();
+        } else{
+            std::uniform_int_distribution<size_t> dist(0, previous_restricted_candidate_list.size()-1);
+            let candidate_number = dist(rng);
+            let& next_neighbour = previous_restricted_candidate_list[candidate_number];
+            solution = next_neighbour.first;
+            current_cost = next_neighbour.second;
+            remove_empty_vectors(solution.getRoutes());
         }
     }
     return solution;
@@ -150,10 +149,11 @@ float Problem::get_cost_function(const Solution &solution) const {
    auto result = 0.0f;
 
    for(let &route: solution.getRoutes()){
+       if(route.empty()) continue;
        auto load_time = 0.0f;
        auto previous_node = depot;
        for(let node : route){
-           load_time += data[node].load_time(load_time, previous_node);
+           load_time = data[node].load_time(load_time, previous_node);
            previous_node = data[node];
        }
        result += load_time + depot.get_distance(previous_node);
@@ -178,99 +178,127 @@ void Problem::add_missing_routes(Solution &solution) const {
 
 template <typename Func>
 bool Problem::perform_swaps(std::vector<RCL_tuple>& rcl, const Solution& solution, Func goal) const {
-    const auto& routes = solution.getRoutes();  // Access the routes directly once
+    const auto& routes = solution.getRoutes();
     size_t route_count = routes.size();
 
-    // Loop through each route by index
-    for (size_t route_number = 0; route_number < route_count; ++route_number) {
+    // Generate a shuffled order of route indices
+    auto shuffled_routes = getShuffledIndices(route_count);
+
+    // Loop through each route in random order
+    for (size_t route_number : shuffled_routes) {
         const auto& route = routes[route_number];
         size_t route_size = route.size();
 
-        // Loop through each pair of nodes by index within the route
-        for (size_t first_index = 0; first_index < route_size; ++first_index) {
-            for (size_t second_index = 0; second_index < route_size; ++second_index) {
+        // Generate a shuffled order of node indices within the route
+        auto shuffled_nodes = getShuffledIndices(route_size);
 
-                // Skip if the indices are the same, to avoid self-swap
-                if (first_index == second_index) continue;
+        // Loop through each pair of nodes by shuffled index within the route
+        for (size_t first_index : shuffled_nodes) {
+            for (size_t second_index : shuffled_nodes) {
+                if (first_index == second_index) continue; // Skip self-swap
 
-                // Create a candidate solution by swapping the nodes at first_index and second_index
+                // Create a candidate solution by swapping nodes at shuffled indices
                 auto candidate_solution = solution.swap(route_number, first_index, second_index);
 
-                // Check if the candidate solution is legal
+                // Check legality and evaluate the goal
                 if (candidate_solution.is_legal(data, fleetProperties.capacity)) {
-                    // Evaluate the candidate solution with the goal function
-                    if (goal(rcl, candidate_solution)) return true;  // Stop if the goal is satisfied
+                    if (goal(rcl, candidate_solution)) return true;  // Stop if goal is met
                 }
             }
         }
     }
 
-    return false;  // Return false if no satisfactory solution was found
+    return false; // Return false if no satisfactory solution was found
 }
 
+
 template <typename Func>
-bool Problem::perform_relocations(std::vector<RCL_tuple> &rcl, const Solution &solution, Func goal) const {
+bool Problem::perform_relocations(std::vector<RCL_tuple>& rcl, const Solution& solution, Func goal) const {
     auto routes = solution.getRoutes();
     size_t route_count = routes.size();
 
-    // Loop over each route as a source route for relocation
-    for (size_t source_route_index = 0; source_route_index < route_count; ++source_route_index) {
+    // Generate a shuffled order of source route indices
+    auto shuffled_source_routes = getShuffledIndices(route_count);
+
+    // Loop over each source route in random order
+    for (size_t source_route_index : shuffled_source_routes) {
         const auto& source_route = routes[source_route_index];
+        size_t source_size = source_route.size();
 
-        // Loop through each node in the source route
-        for (size_t node_index = 0; node_index < source_route.size(); ++node_index) {
+        // Generate a shuffled order of node indices within the source route
+        auto shuffled_nodes = getShuffledIndices(source_size);
 
-            // Try relocating this node into each target route
-            for (size_t target_route_index = 0; target_route_index < route_count; ++target_route_index) {
+        // Loop through each node by shuffled index in the source route
+        for (size_t node_index : shuffled_nodes) {
+            // Generate a shuffled order of target route indices
+            auto shuffled_target_routes = getShuffledIndices(route_count);
 
-                // Skip relocation within the same route
-                if (source_route_index == target_route_index) continue;
+            // Try relocating this node to each target route in random order
+            for (size_t target_route_index : shuffled_target_routes) {
+                if (source_route_index == target_route_index) continue; // Skip self-relocation
 
                 const auto& target_route = routes[target_route_index];
+                size_t target_size = target_route.size();
 
-                // Attempt relocation to every position in the target route
-                for (size_t target_position = 0; target_position <= target_route.size(); ++target_position) {
+                // Generate a shuffled order of insertion positions in the target route
+                auto shuffled_positions = getShuffledIndices(target_size + 1);
+
+                // Try each position in the target route
+                for (size_t target_position : shuffled_positions) {
                     // Create a candidate solution with relocation
                     auto candidate_solution = solution.relocation(source_route_index, target_route_index, node_index, target_position);
 
-                    // Check if the candidate solution is legal (meets constraints)
+                    // Check legality and evaluate the goal
                     if (candidate_solution.is_legal(data, fleetProperties.capacity)) {
-                        // Evaluate candidate solution with the goal function
-                        if(goal(rcl, candidate_solution)) return true;
+                        if (goal(rcl, candidate_solution)) return true;
                     }
                 }
             }
         }
     }
+
     return false;
 }
+
 template <typename Func>
 bool Problem::perform_two_opt(std::vector<RCL_tuple>& rcl, const Solution& solution, Func goal) const {
     auto routes = solution.getRoutes();
     size_t route_count = routes.size();
 
-    // Loop over each route to apply two-opt within each route
-    for (size_t route_index = 0; route_index < route_count; ++route_index) {
+    // Generate a shuffled order of route indices
+    auto shuffled_routes = getShuffledIndices(route_count);
+
+    // Loop over each route in random order
+    for (size_t route_index : shuffled_routes) {
         const auto& route = routes[route_index];
         size_t route_size = route.size();
 
-        // Loop through each possible segment within the route
-        for (size_t start_index = 0; start_index < route_size - 1; ++start_index) {
-            for (size_t end_index = start_index + 1; end_index < route_size; ++end_index) {
+        if (route_size < 2) continue; // Skip routes with fewer than 2 nodes
 
-                // Create a candidate solution by applying two-opt to the segment
+        // Generate shuffled indices for two-opt segments within the route
+        auto shuffled_start_indices = getShuffledIndices(route_size - 1);
+
+        // Loop over random start and end indices for two-opt within the route
+        for (size_t start_index : shuffled_start_indices) {
+            auto shuffled_end_indices = getShuffledIndices(route_size - start_index - 1);
+
+            for (size_t end_offset : shuffled_end_indices) {
+                size_t end_index = start_index + 1 + end_offset;
+
+                // Create a candidate solution by applying two-opt
                 auto candidate_solution = solution.two_opt(route_index, start_index, end_index);
 
-                // Check if the candidate solution is legal (meets constraints)
+                // Check legality and evaluate the goal
                 if (candidate_solution.is_legal(data, fleetProperties.capacity)) {
-                    // Evaluate candidate solution with the goal function
-                    if (goal(rcl, candidate_solution)) return true;  // Stop if goal is satisfied
+                    if (goal(rcl, candidate_solution)) return true;
                 }
             }
         }
     }
-    return false;  // Return false if no satisfactory solution was found
+
+    return false;
 }
+
 
 
 
