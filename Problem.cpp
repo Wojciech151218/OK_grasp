@@ -11,10 +11,10 @@
 #include <random>
 #include <vector>
 #include <functional>
+#include <iomanip>
 
 
-
-Solution Problem::solve_grasp(size_t epochs, size_t rcl_max_size, float momentum_rate) const {
+Solution Problem::solve_grasp(size_t epochs, size_t rcl_max_size, float momentum_rate, float criterion_threshold) const {
     auto solution = get_initial_solution();
     add_missing_routes(solution);
     auto current_cost = INFINITY;
@@ -24,11 +24,11 @@ Solution Problem::solve_grasp(size_t epochs, size_t rcl_max_size, float momentum
 
     //remove_empty_vectors(solution.getRoutes());
 
-    auto cost_goal = [momentum_rate, &current_cost,rcl_max_size,&previous_rcl_size, this](std::vector<RCL_tuple> &rcl, const Solution & solution) {
+    auto cost_goal = [criterion_threshold,momentum_rate, &current_cost,rcl_max_size,&previous_rcl_size, this](std::vector<RCL_tuple> &rcl, const Solution & solution) {
         let excessive_routes =  solution.get_routes_number()>fleetProperties.vehicle_number?
                                 solution.get_routes_number()-fleetProperties.vehicle_number - count_empty_vectors(solution.getRoutes()):0;
         let cost = get_cost_function(solution)*(excessive_routes +1);
-        let momentum =(1.0-momentum_rate) + static_cast<float>( previous_rcl_size) * momentum_rate / rcl_max_size;
+        let momentum =(1.0) + static_cast<float>( previous_rcl_size) * momentum_rate / rcl_max_size;
         let cost_after_evaluation = cost * momentum;
         if(cost_after_evaluation < current_cost)
             rcl.emplace_back(solution,cost);
@@ -40,17 +40,16 @@ Solution Problem::solve_grasp(size_t epochs, size_t rcl_max_size, float momentum
     std::vector<RCL_tuple> previous_restricted_candidate_list = {};
 
     for (int i = 0; i < epochs; ++i) {
-        if(i%10==0){
-            std::cout<< i << " cost " << current_cost << " size "<<solution.get_routes_number() <<"\n";
+        if(i%1==0){
+            std::cout<< i ;
+            std::cout<<std::fixed << std::setprecision(5) << " cost " << current_cost << " size "<<solution.get_routes_number() <<"\n";
         }
         previous_rcl_size = previous_restricted_candidate_list.size();
 
 
-        if(perform_swaps(restricted_candidate_list,solution,cost_goal)){}
-
-        if(perform_relocations(restricted_candidate_list,solution,cost_goal)){}
-
-        if(perform_two_opt(restricted_candidate_list,solution,cost_goal)){}
+        perform_swaps(restricted_candidate_list,solution,cost_goal);
+        perform_relocations(restricted_candidate_list,solution,cost_goal);
+        perform_two_opt(restricted_candidate_list,solution,cost_goal);
 
 
         if(! restricted_candidate_list.empty()) {
@@ -78,7 +77,7 @@ Problem::Problem(std::vector<DataPoint> _data, const FleetProperties &fleetPrope
         : fleetProperties(fleetProperties) ,depot(depot) {
     std::random_device rd;
     std::mt19937 rng(rd());
-    std::shuffle(_data.begin(), _data.end(), rng);
+    //std::shuffle(_data.begin(), _data.end(), rng);
     data = _data;
     distance_graph = Graph(_data, depot);
 }

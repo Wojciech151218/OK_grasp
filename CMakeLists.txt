@@ -3,7 +3,8 @@ project(OK_grasp)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(OK_grasp main.cpp
+add_executable(OK_grasp
+        main.cpp
         DataLoader.h
         DataPoint.h
         DataPoint.cpp
@@ -14,4 +15,7 @@ add_executable(OK_grasp main.cpp
         Graph.h
         Graph.cpp
         Solution.cpp
-        ResultSaver.h)
+        ResultSaver.h
+        utils.h
+        utils.cpp
+)

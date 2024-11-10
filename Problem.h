@@ -18,7 +18,7 @@ private:
 
 public:
     Problem(std::vector<DataPoint> _data, const FleetProperties &fleetProperties, const DataPoint &depot);
-    Solution solve_grasp(size_t epochs, size_t rcl_max_size, float momentum_rate) const;
+    Solution solve_grasp(size_t epochs, size_t rcl_max_size, float momentum_rate, float criterion_threshold) const;
     float get_cost_function(const Solution & solution) const;
     size_t get_customer_number(size_t index) const;
 private:
