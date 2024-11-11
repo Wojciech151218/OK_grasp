@@ -16,7 +16,7 @@
 
 
 Solution Problem::solve_grasp(size_t epochs, size_t rcl_max_size, float momentum_rate, float criterion_threshold) const {
-    auto time_limit = 5;
+    auto time_limit = 300;
     auto solution = get_initial_solution();
     add_missing_routes(solution);
     auto current_cost = INFINITY;
@@ -30,12 +30,12 @@ Solution Problem::solve_grasp(size_t epochs, size_t rcl_max_size, float momentum
         let excessive_routes =  solution.get_routes_number()>fleetProperties.vehicle_number?
                                 solution.get_routes_number()-fleetProperties.vehicle_number - count_empty_vectors(solution.getRoutes()):0;
         let cost = get_cost_function(solution)*(excessive_routes +1);
-        let momentum =(1.0) + static_cast<float>( previous_rcl_size) * momentum_rate / rcl_max_size;
+        let momentum =criterion_threshold+ static_cast<float>( previous_rcl_size) * momentum_rate / rcl_max_size;
         let cost_after_evaluation = cost * momentum;
         if(cost_after_evaluation < current_cost)
             rcl.emplace_back(solution,cost);
         auto current_time = std::chrono::high_resolution_clock::now();
-        if (std::chrono::duration_cast<std::chrono::seconds>(current_time - start_time).count() > time_limit) {
+        if (std::chrono::duration_cast<std::chrono::seconds>(current_time - start_time).count() >= time_limit) {
             return Problem::SearchResult::TimeExceeded;
         }
         if(rcl.size() > rcl_max_size) return Problem::SearchResult::CriterionFulfilled;
@@ -81,7 +81,7 @@ Solution Problem::solve_grasp(size_t epochs, size_t rcl_max_size, float momentum
         }
         if(time_constraint_met){
             auto current_time = std::chrono::high_resolution_clock::now();
-            std::cerr<<"time constraint met "<< std::chrono::duration_cast<std::chrono::seconds>(current_time - start_time).count();
+            std::cerr<<"time constraint met "<< std::chrono::duration_cast<std::chrono::microseconds>(current_time - start_time).count();
             break;
         }
 
