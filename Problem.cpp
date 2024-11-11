@@ -12,19 +12,21 @@
 #include <vector>
 #include <functional>
 #include <iomanip>
+#include <chrono>
 
 
 Solution Problem::solve_grasp(size_t epochs, size_t rcl_max_size, float momentum_rate, float criterion_threshold) const {
+    auto time_limit = 5;
     auto solution = get_initial_solution();
     add_missing_routes(solution);
     auto current_cost = INFINITY;
-    auto previous_rcl_size = 0;
+    size_t previous_rcl_size = 0;
     std::random_device rd;
     std::mt19937 rng(rd());
+    auto start_time = std::chrono::high_resolution_clock::now();
 
-    //remove_empty_vectors(solution.getRoutes());
-
-    auto cost_goal = [criterion_threshold,momentum_rate, &current_cost,rcl_max_size,&previous_rcl_size, this](std::vector<RCL_tuple> &rcl, const Solution & solution) {
+    CostGoalFunc cost_goal = [&]
+            (std::vector<RCL_tuple> &rcl, const Solution & solution) {
         let excessive_routes =  solution.get_routes_number()>fleetProperties.vehicle_number?
                                 solution.get_routes_number()-fleetProperties.vehicle_number - count_empty_vectors(solution.getRoutes()):0;
         let cost = get_cost_function(solution)*(excessive_routes +1);
@@ -32,12 +34,26 @@ Solution Problem::solve_grasp(size_t epochs, size_t rcl_max_size, float momentum
         let cost_after_evaluation = cost * momentum;
         if(cost_after_evaluation < current_cost)
             rcl.emplace_back(solution,cost);
-        return rcl.size() > rcl_max_size / 3;
+        auto current_time = std::chrono::high_resolution_clock::now();
+        if (std::chrono::duration_cast<std::chrono::seconds>(current_time - start_time).count() > time_limit) {
+            return Problem::SearchResult::TimeExceeded;
+        }
+        if(rcl.size() > rcl_max_size) return Problem::SearchResult::CriterionFulfilled;
+        else return Problem::SearchResult::NotFulfilled;
     };
 
 
     std::vector<RCL_tuple> restricted_candidate_list = {};
     std::vector<RCL_tuple> previous_restricted_candidate_list = {};
+
+    using LocalSearchMethod = Problem::SearchResult (Problem::*)(std::vector<RCL_tuple>&,const Solution&, CostGoalFunc) const ;
+
+    std::vector<LocalSearchMethod > local_search_methods = {
+            &Problem::perform_swaps,
+            &Problem::perform_relocations,
+            &Problem::perform_two_opt
+    };
+
 
     for (int i = 0; i < epochs; ++i) {
         if(i%1==0){
@@ -46,10 +62,28 @@ Solution Problem::solve_grasp(size_t epochs, size_t rcl_max_size, float momentum
         }
         previous_rcl_size = previous_restricted_candidate_list.size();
 
-
-        perform_swaps(restricted_candidate_list,solution,cost_goal);
-        perform_relocations(restricted_candidate_list,solution,cost_goal);
-        perform_two_opt(restricted_candidate_list,solution,cost_goal);
+        auto time_constraint_met = false;
+        std::shuffle(local_search_methods.begin(), local_search_methods.end(), rng);
+        for (const auto& method : local_search_methods) {
+            bool local_search_finished = false;
+            auto result = (this->*method)(restricted_candidate_list, solution, cost_goal);
+            switch (result) {
+                case SearchResult::NotFulfilled : break;
+                case SearchResult::CriterionFulfilled:
+                    local_search_finished = true;
+                    break;
+                case SearchResult::TimeExceeded:
+                    local_search_finished = true;
+                    time_constraint_met = true;
+                    break;
+            }
+            if(local_search_finished)break;
+        }
+        if(time_constraint_met){
+            auto current_time = std::chrono::high_resolution_clock::now();
+            std::cerr<<"time constraint met "<< std::chrono::duration_cast<std::chrono::seconds>(current_time - start_time).count();
+            break;
+        }
 
 
         if(! restricted_candidate_list.empty()) {
@@ -175,8 +209,7 @@ void Problem::add_missing_routes(Solution &solution) const {
 }
 
 
-template <typename Func>
-bool Problem::perform_swaps(std::vector<RCL_tuple>& rcl, const Solution& solution, Func goal) const {
+Problem::SearchResult Problem::perform_swaps(std::vector<RCL_tuple>& rcl, const Solution& solution, CostGoalFunc goal) const {
     const auto& routes = solution.getRoutes();
     size_t route_count = routes.size();
 
@@ -201,18 +234,18 @@ bool Problem::perform_swaps(std::vector<RCL_tuple>& rcl, const Solution& solutio
 
                 // Check legality and evaluate the goal
                 if (candidate_solution.is_legal(data, fleetProperties.capacity)) {
-                    if (goal(rcl, candidate_solution)) return true;  // Stop if goal is met
+                    let goal_result =goal(rcl, candidate_solution);
+                    if (goal_result != Problem::SearchResult::NotFulfilled) return goal_result;
                 }
             }
         }
     }
 
-    return false; // Return false if no satisfactory solution was found
+    return Problem::SearchResult::NotFulfilled; // Return false if no satisfactory solution was found
 }
 
 
-template <typename Func>
-bool Problem::perform_relocations(std::vector<RCL_tuple>& rcl, const Solution& solution, Func goal) const {
+Problem::SearchResult Problem::perform_relocations(std::vector<RCL_tuple>& rcl, const Solution& solution, CostGoalFunc goal) const {
     auto routes = solution.getRoutes();
     size_t route_count = routes.size();
 
@@ -249,18 +282,18 @@ bool Problem::perform_relocations(std::vector<RCL_tuple>& rcl, const Solution& s
 
                     // Check legality and evaluate the goal
                     if (candidate_solution.is_legal(data, fleetProperties.capacity)) {
-                        if (goal(rcl, candidate_solution)) return true;
+                        let goal_result =goal(rcl, candidate_solution);
+                        if (goal_result != Problem::SearchResult::NotFulfilled) return goal_result;
                     }
                 }
             }
         }
     }
 
-    return false;
+    return Problem::SearchResult::NotFulfilled;
 }
 
-template <typename Func>
-bool Problem::perform_two_opt(std::vector<RCL_tuple>& rcl, const Solution& solution, Func goal) const {
+Problem::SearchResult Problem::perform_two_opt(std::vector<RCL_tuple>& rcl, const Solution& solution, CostGoalFunc goal) const {
     auto routes = solution.getRoutes();
     size_t route_count = routes.size();
 
@@ -289,13 +322,14 @@ bool Problem::perform_two_opt(std::vector<RCL_tuple>& rcl, const Solution& solut
 
                 // Check legality and evaluate the goal
                 if (candidate_solution.is_legal(data, fleetProperties.capacity)) {
-                    if (goal(rcl, candidate_solution)) return true;
+                    let goal_result =goal(rcl, candidate_solution);
+                    if (goal_result != Problem::SearchResult::NotFulfilled) return goal_result;
                 }
             }
         }
     }
 
-    return false;
+    return Problem::SearchResult::NotFulfilled;
 }
 
 
