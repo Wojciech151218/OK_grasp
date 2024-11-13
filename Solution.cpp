@@ -150,36 +150,23 @@ Solution Solution::load_solution(const std::string &result_file, const std::stri
         return solution;
     }
 
-    int routes_num;
-    double routes_distance;
-
-    file >> routes_num >> routes_distance;
-
+    std::string line;
     std::vector<std::vector<size_t>> routes;
-    for (int i = 0; i < routes_num; ++i) {
+    std::getline(file, line);
+    while (std::getline(file, line)) {
         std::vector<size_t> route;
-        std::string line;
 
-        if (std::getline(file, line)) {
-            std::istringstream line_stream(line);
-            size_t customer_number;
 
-            while (line_stream >> customer_number) {
-                route.push_back(customer_number);
-            }
-            routes.push_back(route);
+        std::istringstream line_stream(line);
+        size_t customer_number;
+        while (line_stream >> customer_number) {
+            route.push_back(customer_number);
         }
+        routes.push_back(route);
     }
 
-    auto it = routes.begin();
-    while (it != routes.end()) {
-        if (it->empty()) {
-            it = routes.erase(it);
-        } else {
-            ++it;
-        }
-    }
-    solution.getRoutes() = routes;
+
+    solution.routes = routes;
     file.close();
 
     return solution;
