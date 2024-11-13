@@ -18,7 +18,6 @@
 Solution Problem::solve_grasp(size_t epochs, size_t rcl_max_size, float momentum_rate, float criterion_threshold) const {
     auto time_limit = 300;
     auto solution = get_initial_solution();
-    add_missing_routes(solution);
     auto current_cost = INFINITY;
     size_t previous_rcl_size = 0;
     std::random_device rd;
