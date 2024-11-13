@@ -170,6 +170,7 @@ Solution Solution::load_solution(const std::string &result_file, const std::stri
             routes.push_back(route);
         }
     }
+
     auto it = routes.begin();
     while (it != routes.end()) {
         if (it->empty()) {

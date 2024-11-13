@@ -8,6 +8,9 @@ int main() {
     auto solution1 = Solution::load_solution("result.txt","input.txt");
     return 0;
 
+
+
+
     const std::string file_path = "input.txt";
     auto data = DataLoader::load_data(file_path);
     auto fleet_properties = DataLoader::load_fleet_properties(file_path);
