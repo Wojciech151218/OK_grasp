@@ -10,7 +10,7 @@ public:
     DataPoint(unsigned int customer, unsigned int x, unsigned int y, unsigned int demand,
               unsigned int ready, unsigned int due, unsigned int service);
 
-    float get_distance(const DataPoint &dataPoint) const;
+    double get_distance(const DataPoint &dataPoint) const;
 
     unsigned int getCustomerNumber() const;
 
@@ -19,7 +19,7 @@ public:
     unsigned int getReadyTime() const;
     unsigned int getDemand() const;
 
-    float load_time(float previous_load_time, const DataPoint &previous_vertex) const;
+    double load_time(double previous_load_time, const DataPoint &previous_vertex) const;
 
     // Friend swap function that swaps all members
     friend void swap(DataPoint& a, DataPoint& b) noexcept {

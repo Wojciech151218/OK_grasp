@@ -5,6 +5,7 @@
 #include <ctime>
 #include "Solution.h"
 #include "utils.h"
+#include "DataLoader.h"
 #include <vector>
 #include <random>
 #include <algorithm>
@@ -83,7 +84,7 @@ bool Solution::is_legal(const std::vector<DataPoint> & data, size_t capacity) co
 
     for (let &route : routes) {
         size_t total_demand = 0;  // Sum of demands in the current route
-        float load_time = 0.0f;     // Initial load time (start from the depot)
+        double load_time = 0.0;     // Initial load time (start from the depot)
 
         for (size_t i = 0; i < route.size(); ++i) {
             let &current_vertex = data[route[i]];
@@ -100,11 +101,11 @@ bool Solution::is_legal(const std::vector<DataPoint> & data, size_t capacity) co
                 load_time = current_vertex.load_time(load_time, previous_vertex);
             } else {
                 // First stop after the depot, set load time to earliest ready time if starting from the depot
-                load_time = static_cast<float>(current_vertex.getReadyTime());
+                load_time = static_cast<double >(current_vertex.getReadyTime());
             }
 
             // Check if arrival time respects the due time
-            if (load_time >  static_cast<float>(current_vertex.getDueDate())) {
+            if (load_time >  static_cast<double>(current_vertex.getDueDate())) {
                 return false;  // Time window constraint violated
             }
         }
@@ -135,4 +136,52 @@ void Solution::setUnacceptable() {
 std::vector<std::vector<size_t>> Solution::getRoutes() const {
     return routes;
 }
+
+Solution Solution::load_solution(const std::string &result_file, const std::string &input_file) {
+    auto data = DataLoader::load_data(input_file);
+    auto depot = DataLoader::load_depot(input_file);
+    auto graph = Graph(data, depot);
+    auto solution = Solution(graph);
+
+    std::ifstream file(result_file);
+
+    if (!file.is_open()){
+        std::cerr << "Unable to open file!" << std::endl;
+        return solution;
+    }
+
+    int routes_num;
+    double routes_distance;
+
+    file >> routes_num >> routes_distance;
+
+    std::vector<std::vector<size_t>> routes;
+    for (int i = 0; i < routes_num; ++i) {
+        std::vector<size_t> route;
+        std::string line;
+
+        if (std::getline(file, line)) {
+            std::istringstream line_stream(line);
+            size_t customer_number;
+
+            while (line_stream >> customer_number) {
+                route.push_back(customer_number);
+            }
+            routes.push_back(route);
+        }
+    }
+    auto it = routes.begin();
+    while (it != routes.end()) {
+        if (it->empty()) {
+            it = routes.erase(it);
+        } else {
+            ++it;
+        }
+    }
+    solution.getRoutes() = routes;
+    file.close();
+
+    return solution;
+}
+
 

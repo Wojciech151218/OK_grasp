@@ -111,7 +111,7 @@ Problem::Problem(std::vector<DataPoint> _data, const FleetProperties &fleetPrope
         : fleetProperties(fleetProperties) ,depot(depot) {
     std::random_device rd;
     std::mt19937 rng(rd());
-    //std::shuffle(_data.begin(), _data.end(), rng);
+    std::shuffle(_data.begin(), _data.end(), rng);
     data = _data;
     distance_graph = Graph(_data, depot);
 }
@@ -178,12 +178,12 @@ Solution Problem::get_initial_solution() const {
 
 }
 
-float Problem::get_cost_function(const Solution &solution) const {
-   auto result = 0.0f;
+double Problem::get_cost_function(const Solution &solution) const {
+   auto result = 0.0;
 
    for(let &route: solution.getRoutes()){
        if(route.empty()) continue;
-       auto load_time = 0.0f;
+       auto load_time = 0.0;
        auto previous_node = depot;
        for(let node : route){
            load_time = data[node].load_time(load_time, previous_node);

@@ -11,14 +11,14 @@ class Graph {
 
 
 
-    std::vector<std::vector<float >> edge_matrix;
-    std::vector<float> depot_distances;
+    std::vector<std::vector<double >> edge_matrix;
+    std::vector<double> depot_distances;
 
 public:
     Graph();
     Graph(const std::vector<DataPoint> &data, const DataPoint &depot);
-    float get_edge(size_t x, size_t y)const ;
-    float get_distance_from_depot(size_t i)const ;
+    double get_edge(size_t x, size_t y)const ;
+    double get_distance_from_depot(size_t i)const ;
 };
 
 

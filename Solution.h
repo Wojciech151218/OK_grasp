@@ -6,6 +6,10 @@
 #define OK_GRASP_SOLUTION_H
 #include "vector"
 #include "Graph.h"
+#include <iostream>
+#include <string>
+#include <sstream>
+#include <fstream>
 
 class Solution {
 
@@ -22,6 +26,8 @@ public:
     void setUnacceptable();
 
 public:
+    static Solution load_solution(const std::string &result_file ,const std::string & input_file);
+
     size_t get_routes_number() const ;
     Solution swap(size_t route_number, size_t node_a, size_t node_b)const;
     Solution two_opt(size_t route_index, size_t start_index, size_t end_index) const;

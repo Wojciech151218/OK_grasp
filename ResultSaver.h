@@ -10,6 +10,7 @@
 #include "utils.h"
 #include <fstream>
 #include <iostream>
+#include <iomanip>
 
 namespace ResultSaver{
     void save_solution(Solution & solution ,Problem & problem,const std::string & result_file){
@@ -24,7 +25,7 @@ namespace ResultSaver{
             return;
         }
 
-        file << route_number << " "<<distance << "\n";
+        file << route_number << " " << std::fixed << std::setprecision(5) << distance << "\n";
         // Check if the file is open
         if (!file.is_open()) {
             std::cerr << "Failed to open file." << std::endl;

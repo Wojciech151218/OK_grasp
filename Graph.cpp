@@ -6,12 +6,12 @@
 #include "utils.h"
 
 Graph::Graph(const std::vector<DataPoint> &data, const DataPoint &depot) {
-    std::vector<std::vector<float>> result_matrix;
-    std::vector<float> distance_result;
+    std::vector<std::vector<double>> result_matrix;
+    std::vector<double> distance_result;
     auto data_size = data.size();
 
     for (size_t i = 0; i < data_size; ++i) {
-        std::vector<float> row;
+        std::vector<double> row;
         let depot_distance = depot.get_distance(data[i]);
         distance_result.push_back(depot_distance);
         for (int j = 0; j < data_size; ++j) {
@@ -30,7 +30,7 @@ Graph::Graph(const std::vector<DataPoint> &data, const DataPoint &depot) {
 
 
 
-float Graph::get_edge(size_t x, size_t y)const {
+double Graph::get_edge(size_t x, size_t y)const {
     return edge_matrix[x][y];
 }
 
@@ -38,6 +38,6 @@ Graph::Graph() {
 
 }
 
-float Graph::get_distance_from_depot(size_t i) const{
+double Graph::get_distance_from_depot(size_t i) const{
     return depot_distances[i];
 }
