@@ -80,7 +80,7 @@ Solution Solution::swap(size_t route_number, size_t node_a, size_t node_b) const
 
     return new_solution;
 }
-bool Solution::is_legal(const std::vector<DataPoint> & data, size_t capacity) const {
+bool Solution::is_legal(const std::vector<DataPoint> & data, size_t capacity, const DataPoint &depot) const {
 
     for (let &route : routes) {
         size_t total_demand = 0;  // Sum of demands in the current route
@@ -101,11 +101,11 @@ bool Solution::is_legal(const std::vector<DataPoint> & data, size_t capacity) co
                 load_time = current_vertex.load_time(load_time, previous_vertex);
             } else {
                 // First stop after the depot, set load time to earliest ready time if starting from the depot
-                load_time = static_cast<double >(current_vertex.getReadyTime());
+                load_time = current_vertex.load_time(load_time,depot);
             }
 
             // Check if arrival time respects the due time
-            if (load_time >  static_cast<double>(current_vertex.getDueDate())) {
+            if (load_time >  static_cast<double>(current_vertex.getDueDate()+current_vertex.getService())) {
                 return false;  // Time window constraint violated
             }
         }

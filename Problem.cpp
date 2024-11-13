@@ -233,7 +233,7 @@ Problem::SearchResult Problem::perform_swaps(std::vector<RCL_tuple>& rcl, const 
                 auto candidate_solution = solution.swap(route_number, first_index, second_index);
 
                 // Check legality and evaluate the goal
-                if (candidate_solution.is_legal(data, fleetProperties.capacity)) {
+                if (candidate_solution.is_legal(data, fleetProperties.capacity, depot)) {
                     let goal_result =goal(rcl, candidate_solution);
                     if (goal_result != Problem::SearchResult::NotFulfilled) return goal_result;
                 }
@@ -281,7 +281,7 @@ Problem::SearchResult Problem::perform_relocations(std::vector<RCL_tuple>& rcl, 
                     auto candidate_solution = solution.relocation(source_route_index, target_route_index, node_index, target_position);
 
                     // Check legality and evaluate the goal
-                    if (candidate_solution.is_legal(data, fleetProperties.capacity)) {
+                    if (candidate_solution.is_legal(data, fleetProperties.capacity, depot)) {
                         let goal_result =goal(rcl, candidate_solution);
                         if (goal_result != Problem::SearchResult::NotFulfilled) return goal_result;
                     }
@@ -321,7 +321,7 @@ Problem::SearchResult Problem::perform_two_opt(std::vector<RCL_tuple>& rcl, cons
                 auto candidate_solution = solution.two_opt(route_index, start_index, end_index);
 
                 // Check legality and evaluate the goal
-                if (candidate_solution.is_legal(data, fleetProperties.capacity)) {
+                if (candidate_solution.is_legal(data, fleetProperties.capacity, depot)) {
                     let goal_result =goal(rcl, candidate_solution);
                     if (goal_result != Problem::SearchResult::NotFulfilled) return goal_result;
                 }

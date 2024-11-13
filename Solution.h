@@ -32,7 +32,7 @@ public:
     Solution swap(size_t route_number, size_t node_a, size_t node_b)const;
     Solution two_opt(size_t route_index, size_t start_index, size_t end_index) const;
     Solution relocation(size_t route, size_t target_route, size_t index, size_t target_index) const;
-    bool is_legal(const std::vector<DataPoint> & data, size_t capacity) const;
+    bool is_legal(const std::vector<DataPoint> & data, size_t capacity, const DataPoint &depot) const;
     explicit Solution(const Graph  & graph);
 
 
