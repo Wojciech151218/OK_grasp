@@ -26,9 +26,8 @@ Solution Problem::solve_grasp(size_t epochs, size_t rcl_max_size, float momentum
 
     CostGoalFunc cost_goal = [&]
             (std::vector<RCL_tuple> &rcl, const Solution & solution) {
-        let excessive_routes =  solution.get_routes_number()>fleetProperties.vehicle_number?
-                                solution.get_routes_number()-fleetProperties.vehicle_number - count_empty_vectors(solution.getRoutes()):0;
-        let cost = get_cost_function(solution)*(excessive_routes +1);
+
+        let cost = get_cost_function(solution)*(solution.get_routes_number() +1);
         let momentum =criterion_threshold+ static_cast<float>( previous_rcl_size) * momentum_rate / rcl_max_size;
         let cost_after_evaluation = cost * momentum;
         if(cost_after_evaluation < current_cost)
