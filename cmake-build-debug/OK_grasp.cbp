@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="OK_grasp"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="C:/Users/krzys/CLionProjects/OK_grasp_time_limit/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="C:/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/krzys/CLionProjects/OK_grasp_time_limit/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="C:/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/krzys/CLionProjects/OK_grasp_time_limit/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="C:/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/krzys/CLionProjects/OK_grasp_time_limit/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="C:/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/krzys/CLionProjects/OK_grasp_time_limit/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="OK_grasp">
+				<Option output="C:/Users/krzys/CLionProjects/OK_grasp_time_limit/cmake-build-debug/OK_grasp.exe" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="C:/Users/krzys/CLionProjects/OK_grasp_time_limit/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="C:/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/13.1.0/../../../../include/c++/13.1.0"/>
+					<Add directory="C:/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/13.1.0/../../../../include/c++/13.1.0/x86_64-w64-mingw32"/>
+					<Add directory="C:/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/13.1.0/../../../../include/c++/13.1.0/backward"/>
+					<Add directory="C:/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/13.1.0/include"/>
+					<Add directory="C:/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/13.1.0/../../../../include"/>
+					<Add directory="C:/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/13.1.0/include-fixed"/>
+					<Add directory="C:/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/13.1.0/../../../../x86_64-w64-mingw32/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="C:/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/krzys/CLionProjects/OK_grasp_time_limit/cmake-build-debug/Makefile&quot;  VERBOSE=1 OK_grasp"/>
+					<CompileFile command="C:/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/krzys/CLionProjects/OK_grasp_time_limit/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="C:/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/krzys/CLionProjects/OK_grasp_time_limit/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="C:/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/krzys/CLionProjects/OK_grasp_time_limit/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="OK_grasp/fast">
+				<Option output="C:/Users/krzys/CLionProjects/OK_grasp_time_limit/cmake-build-debug/OK_grasp.exe" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="C:/Users/krzys/CLionProjects/OK_grasp_time_limit/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="C:/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/13.1.0/../../../../include/c++/13.1.0"/>
+					<Add directory="C:/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/13.1.0/../../../../include/c++/13.1.0/x86_64-w64-mingw32"/>
+					<Add directory="C:/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/13.1.0/../../../../include/c++/13.1.0/backward"/>
+					<Add directory="C:/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/13.1.0/include"/>
+					<Add directory="C:/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/13.1.0/../../../../include"/>
+					<Add directory="C:/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/13.1.0/include-fixed"/>
+					<Add directory="C:/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/13.1.0/../../../../x86_64-w64-mingw32/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="C:/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/krzys/CLionProjects/OK_grasp_time_limit/cmake-build-debug/Makefile&quot;  VERBOSE=1 OK_grasp/fast"/>
+					<CompileFile command="C:/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/krzys/CLionProjects/OK_grasp_time_limit/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="C:/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/krzys/CLionProjects/OK_grasp_time_limit/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="C:/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/krzys/CLionProjects/OK_grasp_time_limit/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="C:/Users/krzys/CLionProjects/OK_grasp_time_limit/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="C:/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/krzys/CLionProjects/OK_grasp_time_limit/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="C:/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/krzys/CLionProjects/OK_grasp_time_limit/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="C:/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/krzys/CLionProjects/OK_grasp_time_limit/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="C:/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/krzys/CLionProjects/OK_grasp_time_limit/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="C:/Users/krzys/CLionProjects/OK_grasp_time_limit/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="C:/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/krzys/CLionProjects/OK_grasp_time_limit/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="C:/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/krzys/CLionProjects/OK_grasp_time_limit/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="C:/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/krzys/CLionProjects/OK_grasp_time_limit/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="C:/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/krzys/CLionProjects/OK_grasp_time_limit/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="C:/Users/krzys/CLionProjects/OK_grasp_time_limit/DataLoader.cpp">
+			<Option target="OK_grasp"/>
+		</Unit>
+		<Unit filename="C:/Users/krzys/CLionProjects/OK_grasp_time_limit/DataLoader.h">
+			<Option target="OK_grasp"/>
+		</Unit>
+		<Unit filename="C:/Users/krzys/CLionProjects/OK_grasp_time_limit/DataPoint.cpp">
+			<Option target="OK_grasp"/>
+		</Unit>
+		<Unit filename="C:/Users/krzys/CLionProjects/OK_grasp_time_limit/DataPoint.h">
+			<Option target="OK_grasp"/>
+		</Unit>
+		<Unit filename="C:/Users/krzys/CLionProjects/OK_grasp_time_limit/Graph.cpp">
+			<Option target="OK_grasp"/>
+		</Unit>
+		<Unit filename="C:/Users/krzys/CLionProjects/OK_grasp_time_limit/Graph.h">
+			<Option target="OK_grasp"/>
+		</Unit>
+		<Unit filename="C:/Users/krzys/CLionProjects/OK_grasp_time_limit/Problem.cpp">
+			<Option target="OK_grasp"/>
+		</Unit>
+		<Unit filename="C:/Users/krzys/CLionProjects/OK_grasp_time_limit/Problem.h">
+			<Option target="OK_grasp"/>
+		</Unit>
+		<Unit filename="C:/Users/krzys/CLionProjects/OK_grasp_time_limit/ResultSaver.h">
+			<Option target="OK_grasp"/>
+		</Unit>
+		<Unit filename="C:/Users/krzys/CLionProjects/OK_grasp_time_limit/Solution.cpp">
+			<Option target="OK_grasp"/>
+		</Unit>
+		<Unit filename="C:/Users/krzys/CLionProjects/OK_grasp_time_limit/Solution.h">
+			<Option target="OK_grasp"/>
+		</Unit>
+		<Unit filename="C:/Users/krzys/CLionProjects/OK_grasp_time_limit/main.cpp">
+			<Option target="OK_grasp"/>
+		</Unit>
+		<Unit filename="C:/Users/krzys/CLionProjects/OK_grasp_time_limit/utils.cpp">
+			<Option target="OK_grasp"/>
+		</Unit>
+		<Unit filename="C:/Users/krzys/CLionProjects/OK_grasp_time_limit/utils.h">
+			<Option target="OK_grasp"/>
+		</Unit>
+		<Unit filename="C:/Users/krzys/CLionProjects/OK_grasp_time_limit/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>
