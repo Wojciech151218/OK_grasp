@@ -6,16 +6,6 @@
 
 int main() {
     const std::string file_path = "input.txt";
-    // auto data1 = DataLoader::load_data(file_path);
-    // auto fleet_properties1 = DataLoader::load_fleet_properties(file_path);
-    // auto depot1 = DataLoader::load_depot(file_path);
-    // auto problem1 = Problem(data1,fleet_properties1,depot1);
-    // auto solution1 = Solution::load_solution("result.txt",file_path);
-    // auto is_legal = solution1.is_legal(data1,fleet_properties1.capacity, depot1);
-    // return 0;
-
-
-
 
     auto data = DataLoader::load_data(file_path);
     auto fleet_properties = DataLoader::load_fleet_properties(file_path);
