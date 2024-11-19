@@ -1,7 +1,3 @@
-//
-// Created by Wojciech on 01.11.2024.
-//
-
 #include "Problem.h"
 #include "Solution.h"
 #include "utils.h"
@@ -18,6 +14,8 @@
 Solution Problem::solve_grasp(size_t epochs, size_t rcl_max_size, float momentum_rate, float criterion_threshold) const {
     auto time_limit = 300;
     auto solution = get_initial_solution();
+    if(solution.is_unacceptable())
+        return solution;
     auto current_cost = INFINITY;
     size_t previous_rcl_size = 0;
     std::random_device rd;
@@ -52,11 +50,15 @@ Solution Problem::solve_grasp(size_t epochs, size_t rcl_max_size, float momentum
             &Problem::perform_two_opt
     };
 
+    std::vector<std::pair<double, size_t>> solutions;
+
+    auto start_time1 = std::chrono::high_resolution_clock::now();
+    auto last_solution_update_time = start_time1;
 
     for (int i = 0; i < epochs; ++i) {
         if(i%1==0){
             std::cout<< i ;
-            std::cout<<std::fixed << std::setprecision(5) << " cost " << current_cost << " size "<<solution.get_routes_number() <<"\n";
+            std::cout<<std::fixed << std::setprecision(5) << " cost " << current_cost << " size "<< solution.get_routes_number() <<"\n";
         }
         previous_rcl_size = previous_restricted_candidate_list.size();
 
@@ -82,7 +84,12 @@ Solution Problem::solve_grasp(size_t epochs, size_t rcl_max_size, float momentum
             std::cerr<<"time constraint met "<< std::chrono::duration_cast<std::chrono::microseconds>(current_time - start_time).count();
             break;
         }
-
+        auto current_time = std::chrono::high_resolution_clock::now();
+        auto elapsed_time = std::chrono::duration_cast<std::chrono::minutes>(current_time - last_solution_update_time).count();
+        if (elapsed_time >= 1) {
+            solutions.emplace_back(get_cost_function(solution), solution.get_routes_number());
+            last_solution_update_time = current_time;
+        }
 
         if(! restricted_candidate_list.empty()) {
             std::uniform_int_distribution<size_t> dist(0, restricted_candidate_list.size()-1);
@@ -102,6 +109,10 @@ Solution Problem::solve_grasp(size_t epochs, size_t rcl_max_size, float momentum
             remove_empty_vectors(solution.getRoutes());
         }
     }
+    std::cout << "\n";
+    for (auto item: solutions) {
+        std::cout << std::fixed << std::setprecision(5)  << item.first << " " << item.second << std::endl;
+    }
     return solution;
 }
 
@@ -109,7 +120,7 @@ Problem::Problem(std::vector<DataPoint> _data, const FleetProperties &fleetPrope
         : fleetProperties(fleetProperties) ,depot(depot) {
     std::random_device rd;
     std::mt19937 rng(rd());
-    std::shuffle(_data.begin(), _data.end(), rng);
+    //std::shuffle(_data.begin(), _data.end(), rng);
     data = _data;
     distance_graph = Graph(_data, depot);
 }
@@ -135,15 +146,17 @@ bool Problem::can_add_to_route(const std::vector<size_t> &route, const DataPoint
             // Time window constraint violated
 
         }else {
-            load_time = static_cast<float>(next.getReadyTime());
+            load_time = static_cast<float>(next.load_time(load_time,depot));
         }
     }
-    load_time = route.empty() ? static_cast<float>(depot.getReadyTime()) : customer.load_time(load_time,data[route[route.size()-1]]);
-    if(depot.load_time(load_time,customer)> static_cast<float>(depot.getDueDate())) {
+    load_time = route.empty() ? static_cast<float>(customer.load_time(load_time,depot))
+            : customer.load_time(load_time,data[route[route.size()-1]]);
+    let load_at_depot = depot.load_time(load_time,customer);
+    if(load_at_depot > static_cast<double>(depot.getDueDate())) {
         return false; // cant go back nie mozemy tu isc
     }
 
-    return total_demand <= fleetProperties.capacity && load_time <= static_cast<float>(customer.getDueDate());
+    return total_demand <= fleetProperties.capacity && load_time - customer.getService()<= static_cast<double >(customer.getDueDate());
 }
 
 

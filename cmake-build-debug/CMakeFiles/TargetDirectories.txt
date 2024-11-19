@@ -1,0 +1,3 @@
+C:/Users/krzys/CLionProjects/OK_grasp/cmake-build-debug/CMakeFiles/OK_grasp.dir
+C:/Users/krzys/CLionProjects/OK_grasp/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/krzys/CLionProjects/OK_grasp/cmake-build-debug/CMakeFiles/rebuild_cache.dir
