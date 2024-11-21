@@ -34,19 +34,20 @@ unsigned int DataPoint::getReadyTime() const {
 unsigned int DataPoint::getDemand() const {
     return demand;
 }
-
+/// b_i = max{ b_i-1 + d_i-1 + c_i-1,i , e_i  }
+/// b_1-1 czas zakończenia rozładunku w poprzednim wierzchołku.
+///d_i-1 czas rozładunku w poprzednim wierzchołku.
+///c_i-1,i czas przejazdu między wierzchołkami i-1 i i
+///e_i  najwcześniejszy dopuszczalny czas rozładunku w wierzchołku i
+/// w naszej implementacji ta metoda zwraca b_1 + czas serwisu więc load time zwraca zatem czas wyjazdu od klienta
+/// d_i-1  tego elemntu nie trzeba uwzględniać , ponieważ jest on zawarty już w b_i-1
 double DataPoint::load_time(double previous_load_time, const DataPoint & previous_vertex) const {
-    /// b_i = max{ b_i-1 + d_i-1 + c_i-1,i , e_i  }
-    /// b_1-1 czas zakończenia rozładunku w poprzednim wierzchołku.
-    ///d_i-1 czas rozładunku w poprzednim wierzchołku.
-    ///c_i-1,i czas przejazdu między wierzchołkami i-1 i i
-    ///e_i  najwcześniejszy dopuszczalny czas rozładunku w wierzchołku i
 
-    let next_available_time = static_cast<double>(ready_time);
+    let next_available_time = static_cast<double>(ready_time);//e_i
 
 
-    let finish_time = previous_load_time;
-    let distance =  get_distance(previous_vertex) ;
+    let finish_time = previous_load_time; //b_i-1
+    let distance =  get_distance(previous_vertex) ;//c_i-1
 
 
     return std::max(finish_time  + distance  ,

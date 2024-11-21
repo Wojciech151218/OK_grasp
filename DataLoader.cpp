@@ -4,6 +4,8 @@
 
 #include "DataLoader.h"
 
+#include "utils.h"
+
 // plik nie moze konczyc sie pustą linia inaczej nie zaladuje danych poprawnie ostatnia linijka bedzie zaladowana dwukrotnie
 std::vector<DataPoint> DataLoader::load_data(const std::string & file_path ){
     std::ifstream file(file_path);
@@ -16,7 +18,7 @@ std::vector<DataPoint> DataLoader::load_data(const std::string & file_path ){
 
     std::string line;
     bool customer_section = false;
-
+    auto data_lines  = false;
 
     // Read the file line by line
     while (std::getline(file, line)) {
@@ -27,13 +29,18 @@ std::vector<DataPoint> DataLoader::load_data(const std::string & file_path ){
             customer_section = true;  // Begin parsing customer data after this line
             std::getline(file, line); // Skip the column headers line
             std::getline(file, line);
-            std::getline(file, line);
             continue;
         }
+
         if (!customer_section) continue; // Skip lines until we reach the CUSTOMER section
 
-        if(line.empty()) break;
-        // Parse customer data
+        if (line.find("0") != std::string::npos) {
+            data_lines = true;
+        }
+        if(!data_lines) continue;
+
+        if(line.empty() || line == "  ") break;
+
         unsigned int customer_number, x, y, demand, ready, due, service;
         line_stream >> customer_number >> x >> y >> demand >> ready >> due >> service;
 
@@ -93,6 +100,7 @@ DataPoint DataLoader::load_depot(const std::string &file_path) {
 
     std::string line;
     bool customer_section = false;
+    auto data_lines  = false;
 
 
     // Read the file line by line
@@ -103,10 +111,13 @@ DataPoint DataLoader::load_depot(const std::string &file_path) {
         if (line.find("CUSTOMER") != std::string::npos) {
             customer_section = true;  // Begin parsing customer data after this line
             std::getline(file, line); // Skip the column headers line
-            std::getline(file, line);
             continue;
         }
         if (!customer_section) continue;// Skip lines until we reach the CUSTOMER section
+        if (line.find("0") != std::string::npos) {
+            data_lines = true;
+        }
+        if(!data_lines) continue;
         unsigned int customer_number, x, y, demand, ready, due, service;
         line_stream >> customer_number >> x >> y >> demand >> ready >> due >> service;
         return {customer_number,x, y, demand, ready, due, service};

@@ -21,6 +21,7 @@ Solution::Solution(const Graph  & graph): graph(graph), unacceptable(false){}
 
 
 Solution Solution::relocation(size_t route, size_t target_route, size_t index, size_t target_index) const {
+    //zrobione przez chat gpt
     Solution new_solution = *this;  // Create a copy of the current solution
 
     // Check if the specified route and index are within bounds
@@ -51,6 +52,7 @@ Solution Solution::relocation(size_t route, size_t target_route, size_t index, s
 
 
 Solution Solution::two_opt(size_t route_index, size_t start_index, size_t end_index) const{
+    //zrobione przez chat gpt
     Solution new_solution = *this;  // Copy the current solution
 
     // Check if the specified route and indices are within bounds
@@ -83,35 +85,37 @@ Solution Solution::swap(size_t route_number, size_t node_a, size_t node_b) const
 bool Solution::is_legal(const std::vector<DataPoint> & data, size_t capacity, const DataPoint &depot) const {
 
     for (let &route : routes) {
-        size_t total_demand = 0;  // Sum of demands in the current route
-        double load_time = 0.0;     // Initial load time (start from the depot)
+        size_t total_demand = 0;
+        double load_time = depot.getReadyTime();
 
         for (size_t i = 0; i < route.size(); ++i) {
             let &current_vertex = data[route[i]];
 
-            // Accumulate demand for capacity check
+
             total_demand += current_vertex.getDemand();
             if (total_demand > capacity) {
-                return false;  // Capacity exceeded
+                return false;  // Przekroczono pojemność
             }
 
-            // Calculate the load time for this stop
+            // czas załadunku dla danego wierzchołka
             if (i > 0) {
                 const DataPoint &previous_vertex = data[route[i-1]];
                 load_time = current_vertex.load_time(load_time, previous_vertex);
             } else {
-                // First stop after the depot, set load time to earliest ready time if starting from the depot
-                load_time = current_vertex.load_time(load_time,depot);
+                // Pierwszy przystanek po depocie, ustaw czas załadunku na najwcześniejszy czas gotowości
+                load_time = current_vertex.load_time(load_time, depot);
             }
 
-            // Check if arrival time respects the due time
+            // Sprawdź, czy czas przyjazdu mieści się w dopuszczalnym przedziale czasowym
             if (load_time >  static_cast<double>(current_vertex.getDueDate()+current_vertex.getService())) {
-                return false;  // Time window constraint violated
+                return false;  // Naruszono ograniczenie okna czasowego
             }
         }
+
     }
-    return true;  // All routes satisfy the capacity and time window constraints
+    return true;  // Wszystkie trasy spełniają ograniczenia pojemności i okna czasowego
 }
+
 
 std::vector<std::vector<size_t>> &Solution::getRoutes()  {
     return routes;
