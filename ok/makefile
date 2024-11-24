@@ -1,42 +1,38 @@
-# Target executable (no extension)
+# Compiler
+CXX = g++
+
+# Compiler flags
+CXXFLAGS = -Wall -std=c++11
+
+# Target executable
 TARGET = ok
 
-# Compiler and flags
-CXX = g++
-CXXFLAGS = -Wall -Wextra -std=c++17 -O2
-
-# List of source files
+# List of source files (only .cpp files)
 SRCS = main.cpp DataPoint.cpp DataLoader.cpp Problem.cpp Graph.cpp Solution.cpp utils.cpp
 
-# List of object files (replace .cpp with .o)
+# Object files (replace .cpp with .o)
 OBJS = $(SRCS:.cpp=.o)
 
-# Executable name based on OS
-ifeq ($(OS),Windows_NT)
-    EXE = $(TARGET).exe
-    RM = del /f /q
+# OS-specific adjustments
+ifeq ($(OS), Windows_NT)
+    RM = del /Q
+    EXE = .exe
 else
-    EXE = $(TARGET)
     RM = rm -f
+    EXE =
 endif
 
-# Default rule
-all: $(EXE)
+# Default target
+all: $(TARGET)$(EXE)
 
 # Link object files to create the executable
-$(EXE): $(OBJS)
-	$(CXX) $(CXXFLAGS) -o $@ $^
+$(TARGET)$(EXE): $(OBJS)
+	$(CXX) $(OBJS) -o $(TARGET)$(EXE)
 
-# Compile .cpp files to .o files
+# Compile each .cpp file into an .o file
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 # Clean up build files
 clean:
-ifeq ($(OS),Windows_NT)
-	for %%f in ($(OBJS) $(EXE)) do if exist %%f $(RM) %%f
-else
-	$(RM) $(OBJS) $(EXE)
-endif
-
-.PHONY: all clean
+	$(RM) $(OBJS) $(TARGET)$(EXE)

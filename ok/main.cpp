@@ -39,7 +39,11 @@ int main(int argc, char* argv[]) {
 
         auto problem = Problem(data, fleet_properties, depot);
         problem.set_stop_conditions(max_iterations,max_time);
+
+        std::cout<<"optimizing...\n";
         auto solution = problem.solve( 10, 0.002f, 0.995);
+        std::cout<<"finished\n";
+
 
 
         ResultSaver::save_solution(solution, problem, result_file);
