@@ -1,4 +1,3 @@
-// DataPoint.h
 #ifndef OK_GRASP_DATAPOINT_H
 #define OK_GRASP_DATAPOINT_H
 

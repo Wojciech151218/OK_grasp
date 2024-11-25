@@ -8,123 +8,121 @@
 		<Option virtualFolders="CMake Files\;"/>
 		<Build>
 			<Target title="all">
-				<Option working_dir="C:/Users/krzys/CLionProjects/OK_grasp/cmake-build-debug"/>
+				<Option working_dir="/cygdrive/c/Users/krzys/CLionProjects/OK_grasp/cmake-build-debug"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="C:/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/krzys/CLionProjects/OK_grasp/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
-					<CompileFile command="C:/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/krzys/CLionProjects/OK_grasp/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="C:/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/krzys/CLionProjects/OK_grasp/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="C:/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/krzys/CLionProjects/OK_grasp/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make.exe -j12 -f &quot;/cygdrive/c/Users/krzys/CLionProjects/OK_grasp/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make.exe -j12 -f &quot;/cygdrive/c/Users/krzys/CLionProjects/OK_grasp/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make.exe -j12 -f &quot;/cygdrive/c/Users/krzys/CLionProjects/OK_grasp/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make.exe -j12 -f &quot;/cygdrive/c/Users/krzys/CLionProjects/OK_grasp/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="OK_grasp">
-				<Option output="C:/Users/krzys/CLionProjects/OK_grasp/cmake-build-debug/OK_grasp.exe" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="C:/Users/krzys/CLionProjects/OK_grasp/cmake-build-debug"/>
+				<Option output="/cygdrive/c/Users/krzys/CLionProjects/OK_grasp/cmake-build-debug/OK_grasp.exe" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/cygdrive/c/Users/krzys/CLionProjects/OK_grasp/cmake-build-debug"/>
 				<Option object_output="./"/>
 				<Option type="1"/>
 				<Option compiler="gcc"/>
 				<Compiler>
-					<Add directory="C:/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/13.1.0/../../../../include/c++/13.1.0"/>
-					<Add directory="C:/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/13.1.0/../../../../include/c++/13.1.0/x86_64-w64-mingw32"/>
-					<Add directory="C:/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/13.1.0/../../../../include/c++/13.1.0/backward"/>
-					<Add directory="C:/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/13.1.0/include"/>
-					<Add directory="C:/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/13.1.0/../../../../include"/>
-					<Add directory="C:/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/13.1.0/include-fixed"/>
-					<Add directory="C:/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/13.1.0/../../../../x86_64-w64-mingw32/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-pc-cygwin/12/include/c++"/>
+					<Add directory="/usr/lib/gcc/x86_64-pc-cygwin/12/include/c++/x86_64-pc-cygwin"/>
+					<Add directory="/usr/lib/gcc/x86_64-pc-cygwin/12/include/c++/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-pc-cygwin/12/include"/>
+					<Add directory="/usr/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-pc-cygwin/12/../../../../lib/../include/w32api"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="C:/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/krzys/CLionProjects/OK_grasp/cmake-build-debug/Makefile&quot;  VERBOSE=1 OK_grasp"/>
-					<CompileFile command="C:/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/krzys/CLionProjects/OK_grasp/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="C:/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/krzys/CLionProjects/OK_grasp/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="C:/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/krzys/CLionProjects/OK_grasp/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make.exe -j12 -f &quot;/cygdrive/c/Users/krzys/CLionProjects/OK_grasp/cmake-build-debug/Makefile&quot;  VERBOSE=1 OK_grasp"/>
+					<CompileFile command="/usr/bin/make.exe -j12 -f &quot;/cygdrive/c/Users/krzys/CLionProjects/OK_grasp/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make.exe -j12 -f &quot;/cygdrive/c/Users/krzys/CLionProjects/OK_grasp/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make.exe -j12 -f &quot;/cygdrive/c/Users/krzys/CLionProjects/OK_grasp/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="OK_grasp/fast">
-				<Option output="C:/Users/krzys/CLionProjects/OK_grasp/cmake-build-debug/OK_grasp.exe" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="C:/Users/krzys/CLionProjects/OK_grasp/cmake-build-debug"/>
+				<Option output="/cygdrive/c/Users/krzys/CLionProjects/OK_grasp/cmake-build-debug/OK_grasp.exe" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/cygdrive/c/Users/krzys/CLionProjects/OK_grasp/cmake-build-debug"/>
 				<Option object_output="./"/>
 				<Option type="1"/>
 				<Option compiler="gcc"/>
 				<Compiler>
-					<Add directory="C:/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/13.1.0/../../../../include/c++/13.1.0"/>
-					<Add directory="C:/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/13.1.0/../../../../include/c++/13.1.0/x86_64-w64-mingw32"/>
-					<Add directory="C:/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/13.1.0/../../../../include/c++/13.1.0/backward"/>
-					<Add directory="C:/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/13.1.0/include"/>
-					<Add directory="C:/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/13.1.0/../../../../include"/>
-					<Add directory="C:/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/13.1.0/include-fixed"/>
-					<Add directory="C:/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/13.1.0/../../../../x86_64-w64-mingw32/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-pc-cygwin/12/include/c++"/>
+					<Add directory="/usr/lib/gcc/x86_64-pc-cygwin/12/include/c++/x86_64-pc-cygwin"/>
+					<Add directory="/usr/lib/gcc/x86_64-pc-cygwin/12/include/c++/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-pc-cygwin/12/include"/>
+					<Add directory="/usr/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-pc-cygwin/12/../../../../lib/../include/w32api"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="C:/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/krzys/CLionProjects/OK_grasp/cmake-build-debug/Makefile&quot;  VERBOSE=1 OK_grasp/fast"/>
-					<CompileFile command="C:/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/krzys/CLionProjects/OK_grasp/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="C:/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/krzys/CLionProjects/OK_grasp/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="C:/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/krzys/CLionProjects/OK_grasp/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make.exe -j12 -f &quot;/cygdrive/c/Users/krzys/CLionProjects/OK_grasp/cmake-build-debug/Makefile&quot;  VERBOSE=1 OK_grasp/fast"/>
+					<CompileFile command="/usr/bin/make.exe -j12 -f &quot;/cygdrive/c/Users/krzys/CLionProjects/OK_grasp/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make.exe -j12 -f &quot;/cygdrive/c/Users/krzys/CLionProjects/OK_grasp/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make.exe -j12 -f &quot;/cygdrive/c/Users/krzys/CLionProjects/OK_grasp/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="edit_cache">
-				<Option working_dir="C:/Users/krzys/CLionProjects/OK_grasp/cmake-build-debug"/>
+				<Option working_dir="/cygdrive/c/Users/krzys/CLionProjects/OK_grasp/cmake-build-debug"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="C:/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/krzys/CLionProjects/OK_grasp/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
-					<CompileFile command="C:/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/krzys/CLionProjects/OK_grasp/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="C:/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/krzys/CLionProjects/OK_grasp/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="C:/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/krzys/CLionProjects/OK_grasp/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make.exe -j12 -f &quot;/cygdrive/c/Users/krzys/CLionProjects/OK_grasp/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make.exe -j12 -f &quot;/cygdrive/c/Users/krzys/CLionProjects/OK_grasp/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make.exe -j12 -f &quot;/cygdrive/c/Users/krzys/CLionProjects/OK_grasp/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make.exe -j12 -f &quot;/cygdrive/c/Users/krzys/CLionProjects/OK_grasp/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="rebuild_cache">
-				<Option working_dir="C:/Users/krzys/CLionProjects/OK_grasp/cmake-build-debug"/>
+				<Option working_dir="/cygdrive/c/Users/krzys/CLionProjects/OK_grasp/cmake-build-debug"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="C:/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/krzys/CLionProjects/OK_grasp/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
-					<CompileFile command="C:/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/krzys/CLionProjects/OK_grasp/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="C:/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/krzys/CLionProjects/OK_grasp/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="C:/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/krzys/CLionProjects/OK_grasp/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make.exe -j12 -f &quot;/cygdrive/c/Users/krzys/CLionProjects/OK_grasp/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/make.exe -j12 -f &quot;/cygdrive/c/Users/krzys/CLionProjects/OK_grasp/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make.exe -j12 -f &quot;/cygdrive/c/Users/krzys/CLionProjects/OK_grasp/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make.exe -j12 -f &quot;/cygdrive/c/Users/krzys/CLionProjects/OK_grasp/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 		</Build>
-		<Unit filename="C:/Users/krzys/CLionProjects/OK_grasp/DataLoader.cpp">
+		<Unit filename="/cygdrive/c/Users/krzys/CLionProjects/OK_grasp/DataLoader.cpp">
 			<Option target="OK_grasp"/>
 		</Unit>
-		<Unit filename="C:/Users/krzys/CLionProjects/OK_grasp/DataLoader.h">
+		<Unit filename="/cygdrive/c/Users/krzys/CLionProjects/OK_grasp/DataLoader.h">
 			<Option target="OK_grasp"/>
 		</Unit>
-		<Unit filename="C:/Users/krzys/CLionProjects/OK_grasp/DataPoint.cpp">
+		<Unit filename="/cygdrive/c/Users/krzys/CLionProjects/OK_grasp/DataPoint.cpp">
 			<Option target="OK_grasp"/>
 		</Unit>
-		<Unit filename="C:/Users/krzys/CLionProjects/OK_grasp/DataPoint.h">
+		<Unit filename="/cygdrive/c/Users/krzys/CLionProjects/OK_grasp/DataPoint.h">
 			<Option target="OK_grasp"/>
 		</Unit>
-		<Unit filename="C:/Users/krzys/CLionProjects/OK_grasp/Graph.cpp">
+		<Unit filename="/cygdrive/c/Users/krzys/CLionProjects/OK_grasp/Graph.cpp">
 			<Option target="OK_grasp"/>
 		</Unit>
-		<Unit filename="C:/Users/krzys/CLionProjects/OK_grasp/Graph.h">
+		<Unit filename="/cygdrive/c/Users/krzys/CLionProjects/OK_grasp/Graph.h">
 			<Option target="OK_grasp"/>
 		</Unit>
-		<Unit filename="C:/Users/krzys/CLionProjects/OK_grasp/Problem.cpp">
+		<Unit filename="/cygdrive/c/Users/krzys/CLionProjects/OK_grasp/Problem.cpp">
 			<Option target="OK_grasp"/>
 		</Unit>
-		<Unit filename="C:/Users/krzys/CLionProjects/OK_grasp/Problem.h">
+		<Unit filename="/cygdrive/c/Users/krzys/CLionProjects/OK_grasp/Problem.h">
 			<Option target="OK_grasp"/>
 		</Unit>
-		<Unit filename="C:/Users/krzys/CLionProjects/OK_grasp/ResultSaver.h">
+		<Unit filename="/cygdrive/c/Users/krzys/CLionProjects/OK_grasp/ResultSaver.h">
 			<Option target="OK_grasp"/>
 		</Unit>
-		<Unit filename="C:/Users/krzys/CLionProjects/OK_grasp/Solution.cpp">
+		<Unit filename="/cygdrive/c/Users/krzys/CLionProjects/OK_grasp/Solution.cpp">
 			<Option target="OK_grasp"/>
 		</Unit>
-		<Unit filename="C:/Users/krzys/CLionProjects/OK_grasp/Solution.h">
+		<Unit filename="/cygdrive/c/Users/krzys/CLionProjects/OK_grasp/Solution.h">
 			<Option target="OK_grasp"/>
 		</Unit>
-		<Unit filename="C:/Users/krzys/CLionProjects/OK_grasp/main.cpp">
+		<Unit filename="/cygdrive/c/Users/krzys/CLionProjects/OK_grasp/main.cpp">
 			<Option target="OK_grasp"/>
 		</Unit>
-		<Unit filename="C:/Users/krzys/CLionProjects/OK_grasp/utils.cpp">
+		<Unit filename="/cygdrive/c/Users/krzys/CLionProjects/OK_grasp/utils.cpp">
 			<Option target="OK_grasp"/>
 		</Unit>
-		<Unit filename="C:/Users/krzys/CLionProjects/OK_grasp/utils.h">
+		<Unit filename="/cygdrive/c/Users/krzys/CLionProjects/OK_grasp/utils.h">
 			<Option target="OK_grasp"/>
 		</Unit>
-		<Unit filename="C:/Users/krzys/CLionProjects/OK_grasp/CMakeLists.txt">
+		<Unit filename="/cygdrive/c/Users/krzys/CLionProjects/OK_grasp/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\"/>
 		</Unit>
 	</Project>

@@ -1,6 +1,3 @@
-//
-// Created by Wojciech on 01.11.2024.
-//
 
 #include "Graph.h"
 #include "utils.h"
