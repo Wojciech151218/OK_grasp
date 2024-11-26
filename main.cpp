@@ -9,6 +9,13 @@
 #include <cstdlib> // dla std::stoi i std::stof
 
 int main(int argc, char* argv[]) {
+    auto input_file1 = "input.txt";
+    auto data = DataLoader::load_data(input_file1);
+    auto fleet_properties = DataLoader::load_fleet_properties(input_file1);
+    auto depot = DataLoader::load_depot(input_file1);
+    auto solution = Solution::load_solution("plik-1.txt",input_file1);
+    solution.is_legal(data,fleet_properties.capacity,depot);
+    return 1;
 
     if (argc < 3) {
         std::cerr << "Usage: " << argv[0]
@@ -35,6 +42,7 @@ int main(int argc, char* argv[]) {
         auto data = DataLoader::load_data(input_file);
         auto fleet_properties = DataLoader::load_fleet_properties(input_file);
         auto depot = DataLoader::load_depot(input_file);
+
 
 
         auto problem = Problem(data, fleet_properties, depot);

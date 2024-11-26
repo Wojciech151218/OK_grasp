@@ -20,25 +20,25 @@ std::vector<DataPoint> DataLoader::load_data(const std::string & file_path ){
 
     // Read the file line by line
     while (std::getline(file, line)) {
-        std::istringstream line_stream(line);
 
         // Check for section headers
         if (line.find("CUSTOMER") != std::string::npos) {
             customer_section = true;  // Begin parsing customer data after this line
-            std::getline(file, line); // Skip the column headers line
-            std::getline(file, line);
             continue;
         }
 
         if (!customer_section) continue; // Skip lines until we reach the CUSTOMER section
 
-        if (line.find("0") != std::string::npos) {
+        if (line.find("0") != std::string::npos && !data_lines) {
             data_lines = true;
+            std::getline(file, line);
+
         }
         if(!data_lines) continue;
 
         if(line.empty() || line == "  "|| line == "\r") break;
 
+        std::istringstream line_stream(line);
         unsigned int customer_number, x, y, demand, ready, due, service;
         line_stream >> customer_number >> x >> y >> demand >> ready >> due >> service;
 
