@@ -90,8 +90,6 @@ bool Solution::is_legal(const std::vector<DataPoint> & data, size_t capacity, co
 
         for (size_t i = 0; i < route.size(); ++i) {
             let &current_vertex = data[route[i]];
-
-
             total_demand += current_vertex.getDemand();
             if (total_demand > capacity) {
                 return false;  // Przekroczono pojemność
@@ -110,7 +108,14 @@ bool Solution::is_legal(const std::vector<DataPoint> & data, size_t capacity, co
             if (load_time >  static_cast<double>(current_vertex.getDueDate()+current_vertex.getService())) {
                 return false;  // Naruszono ograniczenie okna czasowego
             }
+            if(i == route.size() -1) {
+                let load_at_depot = depot.load_time(load_time,current_vertex);
+                if(load_at_depot > static_cast<double>(depot.getDueDate()))
+                    return false;
+
+            }
         }
+
 
     }
     return true;  // Wszystkie trasy spełniają ograniczenia pojemności i okna czasowego
@@ -164,7 +169,7 @@ Solution Solution::load_solution(const std::string &result_file, const std::stri
         std::istringstream line_stream(line);
         size_t customer_number;
         while (line_stream >> customer_number) {
-            route.push_back(customer_number);
+            route.push_back(customer_number-1);
         }
         routes.push_back(route);
     }

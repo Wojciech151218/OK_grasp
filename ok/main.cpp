@@ -10,6 +10,7 @@
 
 int main(int argc, char* argv[]) {
 
+
     if (argc < 3) {
         std::cerr << "Usage: " << argv[0]
                   << " <input_file> <result_file> [max_iterations=10000] [max_time=300]\n";
@@ -32,26 +33,29 @@ int main(int argc, char* argv[]) {
 
     try {
 
+
         auto data = DataLoader::load_data(input_file);
         auto fleet_properties = DataLoader::load_fleet_properties(input_file);
         auto depot = DataLoader::load_depot(input_file);
 
 
+
         auto problem = Problem(data, fleet_properties, depot);
         problem.set_stop_conditions(max_iterations,max_time);
-
-        std::cout<<"optimizing...\n";
+        std::cout<<"optimizing..."<<std::endl;
         auto solution = problem.solve( 10, 0.002f, 0.995);
-        std::cout<<"finished\n";
-
 
 
         ResultSaver::save_solution(solution, problem, result_file);
+
+
+
 
     } catch (const std::exception& e) {
         std::cerr << "Error: " << e.what() << "\n";
         return 1;
     }
+    std::cout<<"finished"<<std::endl;
 
     return 0;
 }

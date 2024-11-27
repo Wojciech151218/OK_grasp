@@ -12,13 +12,12 @@ SRCS = main.cpp DataPoint.cpp DataLoader.cpp Problem.cpp Graph.cpp Solution.cpp 
 
 # Object files (replace .cpp with .o)
 OBJS = $(SRCS:.cpp=.o)
+RM = rm -f
 
 # OS-specific adjustments
 ifeq ($(OS), Windows_NT)
-    RM = del /Q
     EXE = .exe
 else
-    RM = rm -f
     EXE =
 endif
 
