@@ -1,6 +1,3 @@
-//
-// Created by Wojciech on 02.11.2024.
-//
 
 #include <ctime>
 #include "Solution.h"
@@ -28,7 +25,7 @@ Solution Solution::relocation(size_t route, size_t target_route, size_t index, s
     if (route >= new_solution.routes.size() || index >= new_solution.routes[route].size() ||
         target_route >= new_solution.routes.size()) {
         throw std::out_of_range("Invalid route or index in relocation operation");
-        }
+    }
 
     // Get a reference to the source and target routes
     auto& source_route = new_solution.routes[route];
@@ -61,7 +58,7 @@ Solution Solution::two_opt(size_t route_index, size_t start_index, size_t end_in
         end_index >= new_solution.routes[route_index].size() ||
         start_index >= end_index) {
         throw std::out_of_range("Invalid route or index in two_opt operation");
-        }
+    }
 
     // Get a reference to the specific route to modify
     auto& route = new_solution.routes[route_index];

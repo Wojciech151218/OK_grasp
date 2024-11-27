@@ -1,6 +1,3 @@
-//
-// Created by Wojciech on 01.11.2024.
-//
 
 #include "DataPoint.h"
 #include "cmath"
@@ -9,7 +6,7 @@
 DataPoint::DataPoint(unsigned int customer,unsigned int x, unsigned int y, unsigned int demand,
                      unsigned int ready, unsigned int due, unsigned int service)
         :customer_number(customer), x_coordinate(x), y_coordinate(y), demand(demand),
-        ready_time(ready),due_date(due), service(service) {}
+         ready_time(ready),due_date(due), service(service) {}
 
 double DataPoint::get_distance(const DataPoint &dataPoint) const {
     double dx = static_cast<double>(dataPoint.x_coordinate) - static_cast<double>(x_coordinate);
@@ -51,7 +48,7 @@ double DataPoint::load_time(double previous_load_time, const DataPoint & previou
 
 
     return std::max(finish_time  + distance  ,
-        next_available_time)+ static_cast<double >(service);
+                    next_available_time)+ static_cast<double >(service);
 }
 
 unsigned int DataPoint::getCustomerNumber() const {

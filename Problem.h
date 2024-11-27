@@ -1,6 +1,3 @@
-//
-// Created by Wojciech on 01.11.2024.
-//
 
 #ifndef OK_GRASP_PROBLEM_H
 #define OK_GRASP_PROBLEM_H

@@ -171,7 +171,7 @@ bool Problem::can_add_to_route(const std::vector<size_t> &route, const DataPoint
     // jesli trasa jest pusta liczymy odległość dla rozpatrywanego kleinta do depotu
     // w przeciwnym razie liczymy odległość od ostatniego klienta na trasie
     load_time = route.empty() ? customer.load_time(load_time, depot)
-            : customer.load_time(load_time, data[route[route.size() - 1]]);
+                              : customer.load_time(load_time, data[route[route.size() - 1]]);
 
     //dodajemy powrót do depota
     let load_at_depot = depot.load_time(load_time, customer);
@@ -212,7 +212,7 @@ Solution Problem::get_initial_solution() const {
                 new_route.push_back(index);
                 initial_solution.getRoutes().push_back(new_route);
             } else {
-                    std::cerr<< "unable to create an acceptable initial solution.\n";
+                std::cerr<< "unable to create an acceptable initial solution.\n";
                 initial_solution.setUnacceptable();
                 return initial_solution;
             }
@@ -223,20 +223,20 @@ Solution Problem::get_initial_solution() const {
 }
 /// właściwa funkcja celu czyli długość tras + czekanie + serwis
 double Problem::get_cost_function(const Solution &solution) const {
-   auto result = 0.0;
+    auto result = 0.0;
 
-   for(let &route: solution.getRoutes()){
-       if(route.empty()) continue;
-       auto load_time = 0.0;
-       auto previous_node = depot;
-       for(let node : route){
-           load_time = data[node].load_time(load_time, previous_node);
-           previous_node = data[node];
-       }
-       result += load_time + depot.get_distance(previous_node);
-   }
+    for(let &route: solution.getRoutes()){
+        if(route.empty()) continue;
+        auto load_time = 0.0;
+        auto previous_node = depot;
+        for(let node : route){
+            load_time = data[node].load_time(load_time, previous_node);
+            previous_node = data[node];
+        }
+        result += load_time + depot.get_distance(previous_node);
+    }
 
-   return result;
+    return result;
 }
 
 size_t Problem::get_customer_number(size_t index) const {

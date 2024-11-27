@@ -1,6 +1,3 @@
-//
-// Created by Wojciech on 02.11.2024.
-//
 
 #ifndef OK_GRASP_RESULTSAVER_H
 #define OK_GRASP_RESULTSAVER_H
