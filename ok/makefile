@@ -2,10 +2,10 @@
 CXX = g++
 
 # Compiler flags
-CXXFLAGS = -Wall -std=c++11
+CXXFLAGS = -Wall -std=c++11 -O3 -DNDEBUG
 
 # Target executable
-TARGET = ok_grasp
+TARGET = ok
 
 # List of source files (only .cpp files)
 SRCS = main.cpp DataPoint.cpp DataLoader.cpp Problem.cpp Graph.cpp Solution.cpp utils.cpp
